@@ -5,6 +5,11 @@ export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
     useFactory: async (configModule: ConfigService) => {
+      const reset =
+        configModule.get('isDev') === 't'
+          ? { synchronize: true, dropSchema: true }
+          : { synchronize: false, dropSchema: false };
+
       const dataSource = new DataSource({
         type: 'mysql',
         host: 'localhost',
@@ -13,8 +18,7 @@ export const databaseProviders = [
         password: configModule.get('DATABASE_PASSWORD'),
         database: 'cloack',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        /*synchronize: true,
-        dropSchema: true,*/
+        ...reset,
       });
 
       return dataSource.initialize();

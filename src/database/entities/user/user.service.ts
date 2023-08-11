@@ -1,6 +1,7 @@
 import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { registerDto } from 'src/modules/user/dto/user.dto';
 //import { IUserLogin } from 'src/modules/user/dto/user.dto';
 
 @Injectable()
@@ -20,7 +21,20 @@ export class UserEntityService {
     return user;
   }
 
-  public async createUser(userCredenitlas: any) {
-    const createdUser = this.userRepository.create();
+  public async createUser(userCredentials: registerDto) {
+    const user = await this.chechkIfUserExists({
+      email: userCredentials.email,
+    });
+    if (user) return user;
+    const createdUser = this.userRepository.create({ ...userCredentials });
+    return createdUser;
+  }
+
+  public async chechkIfUserExists(params) {
+    return await this.userRepository.findOne({ where: { ...params } });
+  }
+
+  public async saveUser(user: User) {
+    return await this.userRepository.save(user);
   }
 }

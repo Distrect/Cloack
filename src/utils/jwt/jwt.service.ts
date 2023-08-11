@@ -1,13 +1,13 @@
 // jwt/jwt.service.ts
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtOptionsFactory, JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class JwtAuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async createToken(payload: any): Promise<string> {
-    return this.jwtService.signAsync(payload);
+  async createToken(payload: any, options?: JwtSignOptions): Promise<string> {
+    return this.jwtService.signAsync(payload, options);
   }
 
   async verifyToken(token: string): Promise<any> {

@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -24,6 +25,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser('2c9344c1997c9b0470783ddbe1903c8b'));
   app.useGlobalFilters(new GlobalErrorHandler());
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 bootstrap();

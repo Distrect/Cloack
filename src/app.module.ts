@@ -1,3 +1,4 @@
+import { ProgramModule } from './modules/program/program.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,11 +11,16 @@ import { UserModule } from './modules/user/user.module';
 // import { programTaskProvider } from './database/entities/programtask/programTask.provider';
 // import { reusableTaskProvider } from './database/entities/reusable/reusableTask.provider';
 // import { databaseProviders } from './database/database.provider';
+import { MyLoggerService } from './logger/logger.service';
 
 @Module({
-  imports: [UserModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
+    ProgramModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MyLoggerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -12,9 +12,9 @@ export class Tag {
   @PrimaryGeneratedColumn()
   tagId: number;
 
-  @ManyToOne(() => User, (user) => user.userId)
-  @JoinColumn({ name: 'user_id' })
-  user_id: number;
+  @ManyToOne(() => User, (user) => user.tags)
+  @JoinColumn()
+  user: User;
 
   @Column('varchar')
   tagName: string;

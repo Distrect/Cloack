@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import validate from 'deep-email-validator';
+import { CustomHttpException } from 'src/error/allErros';
 
 @Injectable()
 export class EmailChecker implements NestMiddleware {
@@ -11,11 +12,13 @@ export class EmailChecker implements NestMiddleware {
       email: body?.email,
     });
 
-    //fieldlara göre hata döndğren error classı gerekli
+    console.log(validatedEmail);
 
-    // if (true) {
-    //   throw new Error('anan');
-    // }
+    if (validatedEmail.valid === false) {
+      throw new CustomHttpException('Invalid fields', 400, [
+        { field: 'email' },
+      ]);
+    }
 
     next();
   }
