@@ -18,6 +18,9 @@ export class ProgramController {
     console.log(programService);
   }
 
+  @Get('/getPrograms')
+  public async GetPrograms(@StoredUser() user: any) {}
+
   @Post('/createProgram')
   public async CreateProgram(
     @Body() body: createProgramDto,

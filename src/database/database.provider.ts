@@ -1,28 +1,21 @@
-import { ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm';
+import { GlobalConfigService } from 'src/config/config.service';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
-    useFactory: async (configModule: ConfigService) => {
-      const reset =
-        configModule.get('isDev') === 't'
-          ? { synchronize: true, dropSchema: true }
-          : { synchronize: false, dropSchema: false };
+    useFactory: async (configModule: GlobalConfigService) => {
+      const reset = configModule.getIsDevMode();
+      const databaseOptions = configModule.getDatabaseConfig();
 
       const dataSource = new DataSource({
-        type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: configModule.get('DATABASE_PASSWORD'),
-        database: 'cloack',
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        ...(databaseOptions as DataSourceOptions),
         ...reset,
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       });
 
       return dataSource.initialize();
     },
-    inject: [ConfigService],
+    inject: [GlobalConfigService],
   },
 ];

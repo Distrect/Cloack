@@ -6,7 +6,12 @@ export class GlobalConfigService {
   constructor(private configService: ConfigService) {}
   public getDatabaseConfig() {
     return {
-      password: this.configService.get('DATABASE_PASSWORD'),
+      type: this.configService.get<string>('TYPE'),
+      host: this.configService.get<string>('HOST'),
+      port: this.configService.get<number>('PORT'),
+      username: this.configService.get<string>('DATABASE_USERNAME'),
+      database: this.configService.get<string>('DATABASE'),
+      password: this.configService.get<string>('DATABASE_PASSWORD'),
     };
   }
   public getJwtSecret() {
@@ -21,5 +26,17 @@ export class GlobalConfigService {
       clientSecret: this.configService.get('GOOGLE_CLIENT_SECRET'),
       refreshToken: this.configService.get('REFRESH_TOKEN'),
     };
+  }
+
+  public getIsDevMode() {
+    const isDev = Boolean(this.configService.get<string>('isDev'));
+
+    return isDev
+      ? { synchronize: true, dropSchema: true }
+      : { synchronize: false, dropSchema: false };
+  }
+
+  public get(property: string) {
+    return this.configService.get(property);
   }
 }
