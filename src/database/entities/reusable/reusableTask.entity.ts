@@ -12,15 +12,15 @@ import { Task } from '../task/task.entity';
 export class ReusableTask {
   @PrimaryGeneratedColumn()
   resusableId: number;
-
-  @ManyToOne(() => Task, (task) => task.taskId)
-  @JoinColumn({ name: 'task_id' })
-  task_id: number;
-
-  @ManyToOne(() => Program, (program) => program.programId)
-  @JoinColumn({ name: 'program_id' })
-  program_id: number;
-
+  /*
+  @ManyToOne(() => Task, (task) => task.reusableTasks)
+  @JoinColumn({ name: 'task' })
+  task: number;*/
+  /*
+  @ManyToOne(() => Program, (program) => program.reusableTasks)
+  @JoinColumn({ name: 'program' })
+  program: Program;
+*/
   @Column('integer')
   order: number;
 }

@@ -14,17 +14,35 @@ interface User extends Request {
   user: any;
 }
 
+export interface CookieUser {
+  userId: number;
+  name: string;
+  lastname: string;
+  email: string;
+  password: string;
+  digits: { digits: number; exprationDate: string };
+  isAuthenticated: boolean;
+  createdAt: string;
+  updatedAt: string;
+  iat: number;
+  exp: number;
+}
+
+interface newRequest extends Request {
+  user: CookieUser;
+}
+
 @Injectable()
 export class CookieChecker implements NestMiddleware {
   constructor(private jwtService: JwtAuthService) {}
 
-  public async use(req: Request, res: Response, next: NextFunction) {
+  public async use(req: newRequest, res: Response, next: NextFunction) {
     const cookies = req.cookies['authentication'];
     if (!cookies) {
       throw new UnauthorizedException();
     }
 
-    const verified = await this.jwtService.verifyToken(cookies);
+    const verified: CookieUser = await this.jwtService.verifyToken(cookies);
 
     const todayDate = new Date();
 
@@ -35,7 +53,7 @@ export class CookieChecker implements NestMiddleware {
       );
     }
 
-    (req as User).user = verified;
+    req.user = verified;
 
     next();
   }
@@ -52,5 +70,6 @@ export const Cookies = createParamDecorator(
 export const StoredUser = createParamDecorator((_, ctx: ExecutionContext) => {
   const req = ctx.switchToHttp().getRequest();
   const user = req.user;
+  console.log('fdsfdsfds', user);
   return user;
 });

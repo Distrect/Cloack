@@ -29,7 +29,8 @@ export class GlobalConfigService {
   }
 
   public getIsDevMode() {
-    const isDev = Boolean(this.configService.get<string>('isDev'));
+    const isDev =
+      this.configService.get<string>('isDev') === 'false' ? false : true;
 
     return isDev
       ? { synchronize: true, dropSchema: true }

@@ -11,11 +11,13 @@ import {
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
 import { OrderProgram } from '../orderprogram/orderprogram.entity';
+import { ProgramTask } from '../programtask/programTask.entity';
+import { ReusableTask } from '../reusable/reusableTask.entity';
+import { Calendar } from '../calendar/calendar.entity';
 
 @Entity()
 @Unique(['programName'])
 export class Program {
-  // @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.program_id)
   @PrimaryGeneratedColumn()
   programId: number;
 
@@ -28,16 +30,27 @@ export class Program {
   @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
 
-  @OneToOne(() => Tag)
+  @OneToOne(() => Tag, { onDelete: 'SET NULL' })
   @JoinColumn()
   tag: Tag;
 
   @ManyToOne(() => User, (user) => user.programs)
+  @JoinColumn({ name: 'user' })
   user: User;
 
-  @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.program)
-  orderPrograms: OrderProgram;
+  @OneToMany(() => ProgramTask, (pt) => pt.program)
+  programtask: ProgramTask[];
 
-  /*@Column('varchar', { default: 'samet' })
-  programGroup: string;*/
+  @OneToMany(() => Calendar, (c) => c.program)
+  calendar: Calendar[];
+
+  // @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.program)
+  // orderPrograms: OrderProgram[];
+
+  // @OneToMany(() => ProgramTask, (programTask) => programTask.program)
+  // @JoinColumn({ name: 'programTasks' })
+  // programTasks: ProgramTask[];
+
+  // @OneToMany(() => ReusableTask, (reusableTask) => reusableTask.program)
+  // reusableTasks: ReusableTask[];
 }

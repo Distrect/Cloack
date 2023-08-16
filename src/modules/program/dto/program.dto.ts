@@ -32,3 +32,39 @@ export interface UpdateProgram {
   programDescription?: string;
   tagTagId?: string;
 }
+
+export class Task {
+  public taskId: number;
+
+  @IsNotEmpty()
+  public taskName: string;
+
+  @IsNotEmpty()
+  public taskDuration: string;
+
+  public taskDescription: string;
+
+  public taskColor: string;
+
+  public edited: boolean;
+}
+
+export class UpdateProgramDto {
+  @IsNotEmpty()
+  public newOrder: number;
+
+  @IsNotEmpty()
+  public order: number;
+
+  @IsNotEmpty()
+  public isReusable: boolean;
+
+  public created: boolean;
+
+  public deleted: boolean;
+
+  public programTaskId: number;
+
+  @IsNotEmpty()
+  public task: Task;
+}

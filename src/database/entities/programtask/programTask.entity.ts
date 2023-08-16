@@ -1,36 +1,31 @@
 import {
   Entity,
   Column,
+  JoinColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
-  JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { Program } from '../program/program.entity';
+import { Task } from '../task/task.entity';
+import { Tag } from '../tag/tag.entity';
 
 @Entity()
 export class ProgramTask {
   @PrimaryGeneratedColumn()
   programTaskId: number;
 
-  @ManyToOne(() => Program, (program) => program.programId)
-  @JoinColumn({ name: 'program_id' })
-  program_id: number;
+  @ManyToOne(() => Program)
+  @JoinColumn({ name: 'program' })
+  program: Program;
 
-  @Column('varchar')
+  @ManyToOne(() => Task, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'task' })
+  task: Task;
+
+  @Column('integer')
   order: number;
 
-  @Column('varchar')
-  taskName: number;
-
-  @Column('text')
-  taskDescription: string;
-
-  @Column('time')
-  taskDuration: string;
-
-  @Column('varchar')
-  taskColor: string;
-
-  @Column('varchar')
-  taskGroup: string;
+  @Column({ type: 'boolean', default: false })
+  isReusable: boolean;
 }

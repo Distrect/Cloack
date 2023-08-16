@@ -12,10 +12,10 @@ import { Program } from '../program/program.entity';
 export class OrderProgram {
   @PrimaryGeneratedColumn()
   orderId: number;
-
+  /*
   // @JoinColumn({ name: 'user_id' })
   @ManyToOne(() => User, (user) => user.orderPrograms)
-  user: User;
+  user: User;*/
   /*
   @ManyToOne(() => Program, (program) => program.programId)
   @JoinColumn({ name: 'program_id' })
@@ -23,9 +23,9 @@ export class OrderProgram {
   */
   @Column('integer')
   order: number;
-
+  /*
   @ManyToOne(() => Program, (program) => program.orderPrograms)
-  program: Program;
+  program: Program;*/
 }
 // export class OrderProgram {
 //   @PrimaryGeneratedColumn()

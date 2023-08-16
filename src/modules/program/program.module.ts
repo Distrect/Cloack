@@ -4,17 +4,23 @@ import { ProgramController } from './program.controller';
 import { ProgramService } from './program.service';
 import { CookieChecker } from 'src/middleware/cookieMiddleware/cookie.middleware';
 import { JwtAuthModule } from 'src/utils/jwt/jwt.module';
+import { TaskEntityModule } from 'src/database/entities/task/task.module';
+import { ProgramTaskEntityModule } from 'src/database/entities/programtask/programTaskEntityModule.module';
 
 @Module({
-  imports: [ProgramEntityModule, JwtAuthModule],
+  imports: [
+    ProgramEntityModule,
+    TaskEntityModule,
+    ProgramTaskEntityModule,
+    JwtAuthModule,
+  ],
   exports: [],
   providers: [ProgramService],
   controllers: [ProgramController],
 })
 export class ProgramModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(CookieChecker)
-      .forRoutes('program/deneme', 'program/createProgram');
+    consumer.apply(CookieChecker).forRoutes('program/**');
+    // .forRoutes('program/deneme', 'program/createProgram');
   }
 }

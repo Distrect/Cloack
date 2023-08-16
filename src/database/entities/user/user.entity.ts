@@ -9,6 +9,8 @@ import {
 import { Tag } from '../tag/tag.entity';
 import { Program } from '../program/program.entity';
 import { OrderProgram } from '../orderprogram/orderprogram.entity';
+import { Task } from '../task/task.entity';
+import { Calendar } from '../calendar/calendar.entity';
 
 @Entity()
 export class User {
@@ -42,8 +44,11 @@ export class User {
   @OneToMany(() => Program, (program) => program.user)
   programs: Program[];
 
-  @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.user)
-  orderPrograms: OrderProgram[];
+  @OneToMany(() => Task, (t) => t.user)
+  tasks: Task[];
+
+  @OneToMany(() => Calendar, (c) => c.user)
+  calendar: Calendar[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -51,3 +56,8 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+
+/*
+  @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.user)
+  orderPrograms: OrderProgram[];
+*/
