@@ -7,20 +7,14 @@ import {
   OneToMany,
   JoinColumn,
   Unique,
+  Index,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
-import { OrderProgram } from '../orderprogram/orderprogram.entity';
 import { ProgramTask } from '../programtask/programTask.entity';
-import { ReusableTask } from '../reusable/reusableTask.entity';
 import { Calendar } from '../calendar/calendar.entity';
 
-@Entity()
-@Unique(['programName'])
-export class Program {
-  @PrimaryGeneratedColumn()
-  programId: number;
-
+export abstract class ProgramBase {
   @Column('varchar')
   programName: string;
 
@@ -29,6 +23,16 @@ export class Program {
 
   @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
+  @Column({ type: 'integer', default: 1 })
+  version: number;
+}
+
+@Entity()
+@Unique(['programName'])
+export class Program extends ProgramBase {
+  @Index()
+  @PrimaryGeneratedColumn()
+  programId: number;
 
   @OneToOne(() => Tag, { onDelete: 'SET NULL' })
   @JoinColumn()
@@ -43,14 +47,4 @@ export class Program {
 
   @OneToMany(() => Calendar, (c) => c.program)
   calendar: Calendar[];
-
-  // @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.program)
-  // orderPrograms: OrderProgram[];
-
-  // @OneToMany(() => ProgramTask, (programTask) => programTask.program)
-  // @JoinColumn({ name: 'programTasks' })
-  // programTasks: ProgramTask[];
-
-  // @OneToMany(() => ReusableTask, (reusableTask) => reusableTask.program)
-  // reusableTasks: ReusableTask[];
 }

@@ -1,23 +1,27 @@
+import { DataSource } from 'typeorm';
 import { CookieUser } from './../../middleware/cookieMiddleware/cookie.middleware';
-import { Injectable, Inject, Post } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ProgramEntityService } from 'src/database/entities/program/programEntity.service';
+import { Tag } from 'src/database/entities/tag/tag.entity';
+import { User } from 'src/database/entities/user/user.entity';
+import { TaskEntityService } from 'src/database/entities/task/task.service';
+import { ProgramTaskEntityService } from 'src/database/entities/programtask/programTaskEntityService.service';
+import { SharedEntitiesService } from 'src/database/entities/shared/shared.service';
 import {
   UpdateProgram,
   UpdateProgramDto,
   createProgramDto,
 } from './dto/program.dto';
-import { Tag } from 'src/database/entities/tag/tag.entity';
-import { User } from 'src/database/entities/user/user.entity';
-import { TaskEntityService } from 'src/database/entities/task/task.service';
-import { ProgramTaskEntityService } from 'src/database/entities/programtask/programTaskEntityService.service';
 
 @Injectable()
 export class ProgramService {
   constructor(
     @Inject(ProgramEntityService)
     private programEntityService: ProgramEntityService,
+    @Inject('DATA_SOURCE') private dataManager: DataSource,
     private taskEntityService: TaskEntityService,
     private ptEntityService: ProgramTaskEntityService,
+    private sharedEntititesService: SharedEntitiesService,
   ) {}
 
   public async createProgram(requestBody: createProgramDto, user: any) {
@@ -61,6 +65,9 @@ export class ProgramService {
     const toBeDeletedProgramTasks = [];
     const toBeUpdatedProgramTasks = [];
     const toBeCreatedProgramTasks = [];
+
+    const program = await this.getProgram(programId);
+    const version = program.version + 1;
 
     requestBody.forEach((element) => {
       {
@@ -116,58 +123,27 @@ export class ProgramService {
       }
     });
 
-    console.log(
-      '------------------------------------------------',
-      '\n',
-      'toBeDeletedTasks',
-      toBeDeletedTasks,
-      '\n',
-      'toBeCreatedTasks',
-      toBeCreatedTasks,
-      '\n',
-      'toBeUpdatedTasks',
-      toBeUpdatedTasks,
-      '\n',
-      'toBeUpdatedProgramTasks',
-      toBeUpdatedProgramTasks,
-      '\n',
-      'toBeDeletedProgramTasks',
-      toBeDeletedProgramTasks,
-      '\n',
-      'toBeCreatedProgramTasks',
-      toBeCreatedProgramTasks,
-      '\n',
-      '-------------------------------------------------',
-    );
-
     const createdTasks = await Promise.all([
       ...toBeCreatedTasks.map((tbct) =>
         this.taskEntityService.createTask(tbct.task),
       ),
     ]);
 
-    createdTasks.forEach((newTask, i) => {
-      console.log(toBeCreatedTasks[i]);
+    createdTasks.forEach(({ taskId }, i) => {
       toBeCreatedProgramTasks.push({
         programId,
-        taskId: newTask.taskId,
+        taskId,
         isReusable: false,
         order: toBeCreatedTasks[i].order,
       });
     });
 
-    const res = await Promise.all([
+    const allResponse = await Promise.all([
       ...toBeDeletedTasks.map((tbdt) =>
         this.taskEntityService.deleteTask(tbdt.taskId),
       ),
-      ...toBeCreatedProgramTasks.map(
-        ({ programId: program, taskId: task, isReusable, order }) =>
-          this.ptEntityService.createProgramTask({
-            program,
-            task,
-            isReusable,
-            order,
-          }),
+      ...toBeCreatedProgramTasks.map((tbcp) =>
+        this.ptEntityService.createProgramTask(tbcp),
       ),
       ...toBeUpdatedTasks.map(({ taskId, ...rest }) =>
         this.taskEntityService.updateTask(rest, taskId),
@@ -179,6 +155,10 @@ export class ProgramService {
         this.ptEntityService.deleteProgramTask(t.programTaskId),
       ),
     ]);
+
+    console.log(allResponse);
+
+    await this.sharedEntititesService.cloneProgramWithTasks(version, programId);
   }
 
   public async getPrograms(user: CookieUser) {
@@ -188,6 +168,10 @@ export class ProgramService {
       });
 
     return programsWithTasks;
+  }
+
+  public async getProgram(programId: number) {
+    return await this.programEntityService.getProgram({ programId });
   }
 }
 
@@ -217,3 +201,32 @@ export class ProgramService {
     console.log('321321321', { ...programTasks });
 
     return programsWithTasks;*/
+
+/*
+
+        console.log(
+      '------------------------------------------------',
+      '\n',
+      'toBeDeletedTasks',
+      toBeDeletedTasks,
+      '\n',
+      'toBeCreatedTasks',
+      toBeCreatedTasks,
+      '\n',
+      'toBeUpdatedTasks',
+      toBeUpdatedTasks,
+      '\n',
+      'toBeUpdatedProgramTasks',
+      toBeUpdatedProgramTasks,
+      '\n',
+      'toBeDeletedProgramTasks',
+      toBeDeletedProgramTasks,
+      '\n',
+      'toBeCreatedProgramTasks',
+      toBeCreatedProgramTasks,
+      '\n',
+      '-------------------------------------------------',
+    );
+
+
+    */

@@ -10,7 +10,7 @@ import { createProgramDto } from 'src/modules/program/dto/program.dto';
 @Injectable()
 export class ProgramEntityService {
   constructor(
-    @Inject('ProgramRepository') private programRepository: Repository<Program>,
+    @Inject('ProgramRepository') public programRepository: Repository<Program>,
   ) {}
 
   public async createProgram(program: createProgramDto) {
@@ -45,17 +45,6 @@ export class ProgramEntityService {
   }
 
   public async getAllProgramsWithTasks({ userId }: { userId: number }) {
-    /*return await this.programRepository
-      .createQueryBuilder('program')
-      .leftJoinAndSelect('program.programtask', 'program_task')
-      .innerJoinAndSelect(
-        'program_task.task',
-        'task',
-        'program_task.task = task.taskId',
-      )
-      .addSelect(['program_task.order', 'task.taskName'])
-      .getMany();*/
-
     return await this.programRepository.find({
       where: {
         user: {
@@ -126,4 +115,15 @@ export class ProgramEntityService {
       .leftJoinAndSelect('program.programtask', 'program_task')
       .leftJoinAndSelect('program_task.task', 'task')
       .orderBy('program_task.order', 'DESC')
+      .getMany();*/
+
+/*return await this.programRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.programtask', 'program_task')
+      .innerJoinAndSelect(
+        'program_task.task',
+        'task',
+        'program_task.task = task.taskId',
+      )
+      .addSelect(['program_task.order', 'task.taskName'])
       .getMany();*/

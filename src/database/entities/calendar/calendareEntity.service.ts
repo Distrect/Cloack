@@ -6,6 +6,6 @@ import { Calendar } from './calendar.entity';
 export class CalendarEntityService {
   constructor(
     @Inject('CalendarRepository')
-    private calendarRepository: Repository<Repository>,
+    private calendarRepository: Repository<Calendar>,
   ) {}
 }

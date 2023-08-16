@@ -8,10 +8,17 @@ import {
 } from 'typeorm';
 import { Program } from '../program/program.entity';
 import { Task } from '../task/task.entity';
-import { Tag } from '../tag/tag.entity';
+
+export abstract class ProgramTaskBase {
+  @Column('integer')
+  order: number;
+
+  @Column({ type: 'boolean', default: false })
+  isReusable: boolean;
+}
 
 @Entity()
-export class ProgramTask {
+export class ProgramTask extends ProgramTaskBase {
   @PrimaryGeneratedColumn()
   programTaskId: number;
 
@@ -22,10 +29,4 @@ export class ProgramTask {
   @ManyToOne(() => Task, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'task' })
   task: Task;
-
-  @Column('integer')
-  order: number;
-
-  @Column({ type: 'boolean', default: false })
-  isReusable: boolean;
 }

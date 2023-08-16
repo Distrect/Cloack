@@ -6,13 +6,17 @@ import { CookieChecker } from 'src/middleware/cookieMiddleware/cookie.middleware
 import { JwtAuthModule } from 'src/utils/jwt/jwt.module';
 import { TaskEntityModule } from 'src/database/entities/task/task.module';
 import { ProgramTaskEntityModule } from 'src/database/entities/programtask/programTaskEntityModule.module';
+import { SharedEntitiesModule } from 'src/database/entities/shared/shared.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     ProgramEntityModule,
     TaskEntityModule,
     ProgramTaskEntityModule,
     JwtAuthModule,
+    SharedEntitiesModule,
   ],
   exports: [],
   providers: [ProgramService],

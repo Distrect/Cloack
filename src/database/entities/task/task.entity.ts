@@ -5,15 +5,10 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { ReusableTask } from '../reusable/reusableTask.entity';
 import { ProgramTask } from '../programtask/programTask.entity';
 import { User } from '../user/user.entity';
 
-@Entity()
-export class Task {
-  @PrimaryGeneratedColumn()
-  taskId: string;
-
+export abstract class TaskBase {
   @Column('integer')
   order: number;
 
@@ -31,7 +26,34 @@ export class Task {
 
   @Column({ type: 'boolean', default: false })
   isReusable: boolean;
+}
 
+@Entity()
+export class Task extends TaskBase {
+  @PrimaryGeneratedColumn()
+  taskId: string;
+  /*
+  @PrimaryGeneratedColumn()
+  taskId: string;
+  
+  @Column('integer')
+  order: number;
+
+  @Column('varchar')
+  taskName: string;
+
+  @Column('text')
+  taskDescription: string;
+
+  @Column('time')
+  taskDuration: string;
+
+  @Column('varchar')
+  taskColor: string;
+
+  @Column({ type: 'boolean', default: false })
+  isReusable: boolean;
+*/
   @OneToMany(() => ProgramTask, (pt) => pt.task)
   programtask: ProgramTask[];
 

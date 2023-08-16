@@ -5,8 +5,8 @@ import { Program } from '../program/program.entity';
 import { Task } from '../task/task.entity';
 
 interface ICreateProgramTask {
-  program: unknown;
-  task: unknown;
+  programId: unknown;
+  taskId: unknown;
   isReusable: boolean;
   order: number;
 }
@@ -29,12 +29,12 @@ export class ProgramTaskEntityService {
   public async createProgramTask({
     isReusable,
     order,
-    program,
-    task,
+    programId,
+    taskId,
   }: ICreateProgramTask) {
     const freshPT = this.programTaskRepository.create({
-      program: program as Program,
-      task: task as Task,
+      program: programId as Program,
+      task: taskId as Task,
       order,
       isReusable,
     });

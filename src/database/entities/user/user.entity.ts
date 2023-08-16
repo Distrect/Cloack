@@ -8,15 +8,11 @@ import {
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { Program } from '../program/program.entity';
-import { OrderProgram } from '../orderprogram/orderprogram.entity';
 import { Task } from '../task/task.entity';
 import { Calendar } from '../calendar/calendar.entity';
 
 @Entity()
 export class User {
-  // @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.user_id)
-  // @OneToMany(() => Program, (program) => program.user_id)
-  // @OneToMany(() => Tag, (tag) => tag.user_id)
   @PrimaryGeneratedColumn()
   userId: number;
 
@@ -56,8 +52,3 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-
-/*
-  @OneToMany(() => OrderProgram, (orderProgram) => orderProgram.user)
-  orderPrograms: OrderProgram[];
-*/

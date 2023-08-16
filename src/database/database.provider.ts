@@ -5,9 +5,12 @@ import { Task } from './entities/task/task.entity';
 import { ProgramTask } from './entities/programtask/programTask.entity';
 import { User } from './entities/user/user.entity';
 import { Tag } from './entities/tag/tag.entity';
-import { AuditingUser } from './entities/user/user.audit';
+
+/*import { AuditingUser } from './entities/user/user.audit';
 import { AuditingTag } from './entities/tag/tag.audit';
 import { AuditingSubscriber } from 'typeorm-auditing';
+import { AuditingTask } from './entities/task/task.audit';
+import { AuditingProgram } from './entities/program/program.audit';*/
 
 export const databaseProviders = [
   {
@@ -22,10 +25,13 @@ export const databaseProviders = [
         logging: true,
         entities: [
           __dirname + '/../**/*.entity{.ts,.js}',
+          /* AuditingTag,
           AuditingUser,
-          AuditingTag,
+          AuditingTask,
+          AuditingProgram,*/
+          __dirname + '/../**/*.audit{.ts,.js}',
         ],
-        subscribers: [AuditingSubscriber],
+        //subscribers: [AuditingSubscriber],
       });
 
       const Data = await dataSource.initialize();
@@ -117,54 +123,17 @@ export const databaseProviders = [
       await repo.delete(tag1);
 
       const programRepo = Data.manager.getRepository(Program);
-
-      /*let result = await programRepo
-        .createQueryBuilder('program')
-        .innerJoinAndSelect(
-          'program.programtask',
+      /*
+      const result = await Data.manager
+        .createQueryBuilder(Program)
+        .leftJoin(
+          ProgramTask,
           'program_task',
           'program.programId = program_task.program',
         )
-        .innerJoinAndSelect(
-          'program_task.task',
-          'task',
-          'task.taskId = program_Task.task',
-        )
+        .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
         .getMany();
-
-      // const result = await Data.manager
-      //   .createQueryBuilder(Program)
-      //   .leftJoin(
-      //     ProgramTask,
-      //     'program_task',
-      //     'program.programId = program_task.program',
-      //   )
-      //   .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
-      //   .getMany();
-
-      console.log(result[0]?.programtask?.[0], result);
-
-      /*
-      Data.manager.delete(newTag, {
-        where: {
-          tagId: newTag.tagId,
-        },
-      });*/
-
-      /*
-      const auditRepo = Data.manager.getRepository(AuditingUser);
-
-      const res = await auditRepo
-        .createQueryBuilder('auditing_user')
-        .innerJoinAndMapMany(
-          'auditing_user.tags',
-          AuditingTag,
-          'tags',
-          'tags.user = auditing_user.userId',
-        )
-        .getMany();
-
-      console.log(res);
+      console.log(result);
 */
       return new Promise((res, rej) => res(Data));
     },
@@ -256,3 +225,52 @@ import { Tag } from './entities/tag/tag.entity';*/
       // await save(program1);
 
       return Data;*/
+
+/*let result = await programRepo
+        .createQueryBuilder('program')
+        .innerJoinAndSelect(
+          'program.programtask',
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .innerJoinAndSelect(
+          'program_task.task',
+          'task',
+          'task.taskId = program_Task.task',
+        )
+        .getMany();
+
+      // const result = await Data.manager
+      //   .createQueryBuilder(Program)
+      //   .leftJoin(
+      //     ProgramTask,
+      //     'program_task',
+      //     'program.programId = program_task.program',
+      //   )
+      //   .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
+      //   .getMany();
+
+      console.log(result[0]?.programtask?.[0], result);
+
+      /*
+      Data.manager.delete(newTag, {
+        where: {
+          tagId: newTag.tagId,
+        },
+      });*/
+
+/*
+      const auditRepo = Data.manager.getRepository(AuditingUser);
+
+      const res = await auditRepo
+        .createQueryBuilder('auditing_user')
+        .innerJoinAndMapMany(
+          'auditing_user.tags',
+          AuditingTag,
+          'tags',
+          'tags.user = auditing_user.userId',
+        )
+        .getMany();
+
+      console.log(res);
+*/
