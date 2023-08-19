@@ -5,8 +5,11 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { MyLoggerService } from './logger/logger.service';
-import { ProgramTaskEntityModule } from './database/entities/programtask/programTaskEntityModule.module';
 import { TagModule } from './modules/tag/tag.module';
+import { FriendShipModule } from './modules/friendship/friendShip.module';
+import { CookieChecker } from './middleware/cookieMiddleware/cookie.middleware';
+import { JwtAuthModule } from './utils/jwt/jwt.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -14,12 +17,15 @@ import { TagModule } from './modules/tag/tag.module';
     UserModule,
     ProgramModule,
     TagModule,
+    FriendShipModule,
+    JwtAuthModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, MyLoggerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // console.log(consumer);
+    consumer.apply(CookieChecker).forRoutes('*');
   }
 }

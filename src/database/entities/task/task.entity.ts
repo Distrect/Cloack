@@ -4,6 +4,8 @@ import {
   Column,
   OneToMany,
   ManyToOne,
+  JoinColumn,
+  RelationId,
 } from 'typeorm';
 import { ProgramTask } from '../programtask/programTask.entity';
 import { User } from '../user/user.entity';
@@ -58,5 +60,6 @@ export class Task extends TaskBase {
   programtask: ProgramTask[];
 
   @ManyToOne(() => User, (u) => u.tasks)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

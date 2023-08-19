@@ -5,9 +5,9 @@ import { tagUpdateDto } from 'src/modules/tag/dto/tag.dto';
 
 @Injectable()
 export class TagEntityService {
-  constructor(@Inject('TagRepository') private tagRepository: Repository<Tag>) {
-    console.log(tagRepository);
-  }
+  constructor(
+    @Inject('TagRepository') private tagRepository: Repository<Tag>,
+  ) {}
 
   public async createTag() {}
 

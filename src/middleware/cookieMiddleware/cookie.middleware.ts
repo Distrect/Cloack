@@ -6,13 +6,9 @@ import {
   HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
-import { createParamDecorator, ExecutionContext, Req } from '@nestjs/common';
-import { CustomHttpException } from 'src/error/allErros';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+// import { CustomHttpException } from 'src/error/allErros';
 import { JwtAuthService } from 'src/utils/jwt/jwt.service';
-
-interface User extends Request {
-  user: any;
-}
 
 export interface CookieUser {
   userId: number;
@@ -62,7 +58,7 @@ export class CookieChecker implements NestMiddleware {
 export const Cookies = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const cookie = request.cookies;
+    // const cookie = request.cookies;
     return data ? request.cookies?.[data] : request.cookies;
   },
 );
@@ -70,6 +66,5 @@ export const Cookies = createParamDecorator(
 export const StoredUser = createParamDecorator((_, ctx: ExecutionContext) => {
   const req = ctx.switchToHttp().getRequest();
   const user = req.user;
-  console.log('fdsfdsfds', user);
   return user;
 });

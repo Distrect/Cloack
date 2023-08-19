@@ -1,6 +1,6 @@
 // jwt/jwt.service.ts
 import { Injectable } from '@nestjs/common';
-import { JwtOptionsFactory, JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class JwtAuthService {

@@ -5,12 +5,7 @@ import { Task } from './entities/task/task.entity';
 import { ProgramTask } from './entities/programtask/programTask.entity';
 import { User } from './entities/user/user.entity';
 import { Tag } from './entities/tag/tag.entity';
-
-/*import { AuditingUser } from './entities/user/user.audit';
-import { AuditingTag } from './entities/tag/tag.audit';
-import { AuditingSubscriber } from 'typeorm-auditing';
-import { AuditingTask } from './entities/task/task.audit';
-import { AuditingProgram } from './entities/program/program.audit';*/
+import { Friendship } from './entities/friendship/friendship.entity';
 
 export const databaseProviders = [
   {
@@ -25,20 +20,15 @@ export const databaseProviders = [
         logging: true,
         entities: [
           __dirname + '/../**/*.entity{.ts,.js}',
-          /* AuditingTag,
-          AuditingUser,
-          AuditingTask,
-          AuditingProgram,*/
           __dirname + '/../**/*.audit{.ts,.js}',
         ],
-        //subscribers: [AuditingSubscriber],
       });
 
       const Data = await dataSource.initialize();
 
       const save = async (en: any) => await Data.manager.save(en);
 
-      const user = Data.manager.create(User, {
+      const user1 = Data.manager.create(User, {
         digits: { digits: 123456, exprationDate: new Date() },
         email: 'sametsie34@gmail.com',
         isAuthenticated: true,
@@ -46,8 +36,49 @@ export const databaseProviders = [
         name: 'Samet',
         password: '12345',
       });
+      const user2 = Data.manager.create(User, {
+        digits: { digits: 123456, exprationDate: new Date() },
+        email: 'sametsie31@gmail.com',
+        isAuthenticated: true,
+        lastname: 'Sarıçiçek',
+        name: 'Kerem',
+        password: '12345',
+      });
+      const user3 = Data.manager.create(User, {
+        digits: { digits: 123456, exprationDate: new Date() },
+        email: 'sametsie32@gmail.com',
+        isAuthenticated: true,
+        lastname: 'Sarıçiçek',
+        name: 'Eylül',
+        password: '12345',
+      });
+      const user4 = Data.manager.create(User, {
+        digits: { digits: 123456, exprationDate: new Date() },
+        email: 'sametsie33@gmail.com',
+        isAuthenticated: true,
+        lastname: 'Sarıçiçek',
+        name: 'Emir',
+        password: '12345',
+      });
 
-      const newUser = await save(user);
+      const [newUser, newUser1, newUser2] = await Promise.all([
+        save(user1),
+        save(user2),
+        save(user3),
+        save(user4),
+      ]);
+
+      const friendship1 = Data.manager.create(Friendship, {
+        sender: newUser,
+        receiver: newUser1,
+      });
+      const friendship2 = Data.manager.create(Friendship, {
+        sender: newUser,
+        receiver: newUser2,
+      });
+
+      await save(friendship1);
+      await save(friendship2);
 
       const tag = Data.manager.create(Tag, {
         tagColor: 'cyan',
@@ -63,7 +94,20 @@ export const databaseProviders = [
         user: newUser,
         tag: newTag,
       });
-      const newProgram = await save(program);
+
+      const program1 = Data.manager.create(Program, {
+        programDescription: 'Program 2',
+        programName: 'Program 2',
+        user: newUser1,
+      });
+
+      const [newProgram, newProgram1] = await Promise.all([
+        save(program),
+        save(program1),
+      ]).catch((err) => {
+        console.error(err);
+        return [1, 2];
+      });
 
       const task1 = Data.manager.create(Task, {
         isReusable: false,
@@ -72,7 +116,7 @@ export const databaseProviders = [
         taskDuration: '00:15:00',
         taskName: 'Task 1',
         taskDescription: 'Task 1',
-        user,
+        user: user1,
       });
 
       const newTask1 = await save(task1);
@@ -83,10 +127,32 @@ export const databaseProviders = [
         taskDuration: '00:15:00',
         taskName: 'Task 2',
         taskDescription: 'Task 2',
-        user,
+        user: user1,
       });
 
       const newTask2 = await save(task2);
+      const task3 = Data.manager.create(Task, {
+        isReusable: false,
+        order: 0,
+        taskColor: 'green',
+        taskDuration: '00:15:00',
+        taskName: 'Task 3',
+        taskDescription: 'Task 3',
+        user: user1,
+      });
+
+      const newTask3 = await save(task3);
+      const task4 = Data.manager.create(Task, {
+        isReusable: false,
+        order: 0,
+        taskColor: 'green',
+        taskDuration: '00:15:00',
+        taskName: 'Task 4',
+        taskDescription: 'Task 4',
+        user: user1,
+      });
+
+      const newTask4 = await save(task4);
       const programTask1 = Data.manager.create(ProgramTask, {
         order: 1,
         program: newProgram,
@@ -97,9 +163,21 @@ export const databaseProviders = [
         program: newProgram,
         task: newTask2,
       });
+      const programTask3 = Data.manager.create(ProgramTask, {
+        order: 1,
+        program: newProgram1,
+        task: newTask3,
+      });
+      const programTask4 = Data.manager.create(ProgramTask, {
+        order: 1,
+        program: newProgram1,
+        task: newTask4,
+      });
 
       await save(programTask1);
       await save(programTask2);
+      await save(programTask3);
+      await save(programTask4);
 
       const tag1 = Data.manager.create(Tag, {
         tagColor: 'red',
@@ -118,24 +196,21 @@ export const databaseProviders = [
       newProgram.tag = tag1;
       await save(newProgram);
 
-      const repo = Data.manager.getRepository(Tag);
+      //const repo = Data.manager.getRepository(Tag);
 
-      await repo.delete(tag1);
+      // await repo.delete(tag1);
 
-      const programRepo = Data.manager.getRepository(Program);
-      /*
-      const result = await Data.manager
-        .createQueryBuilder(Program)
-        .leftJoin(
-          ProgramTask,
-          'program_task',
-          'program.programId = program_task.program',
-        )
-        .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
+      //const programRepo = Data.manager.getRepository(Program);
+      const userRepo = Data.manager.getRepository(User);
+
+      const userrs = await userRepo
+        .createQueryBuilder('user')
+        .leftJoin('user.tags', 'tag')
+        .addSelect(['tag.tagName'])
         .getMany();
-      console.log(result);
-*/
-      return new Promise((res, rej) => res(Data));
+      // console.log(userrs?.[0]?.tags[0], userrs);
+
+      return new Promise((res) => res(Data));
     },
     inject: [GlobalConfigService],
   },
@@ -273,4 +348,17 @@ import { Tag } from './entities/tag/tag.entity';*/
         .getMany();
 
       console.log(res);
+*/
+
+/*
+      const result = await Data.manager
+        .createQueryBuilder(Program)
+        .leftJoin(
+          ProgramTask,
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
+        .getMany();
+      console.log(result);
 */

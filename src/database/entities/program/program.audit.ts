@@ -6,8 +6,8 @@ export class SharedProgram extends ProgramBase {
   @PrimaryGeneratedColumn()
   sharedProgramId: number;
 
-  @Column('integer')
-  tag: number;
+  /* @Column('integer')
+  tag: number;*/
 
   @Column('integer')
   user: number;

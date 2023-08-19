@@ -21,9 +21,7 @@ import {
 
 @Controller('program')
 export class ProgramController {
-  constructor(private programService: ProgramService) {
-    console.log(programService);
-  }
+  constructor(private programService: ProgramService) {}
 
   @Get('/getPrograms')
   public async GetPrograms(@StoredUser() user: CookieUser) {

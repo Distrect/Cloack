@@ -1,12 +1,15 @@
-import { DataSource } from 'typeorm';
-import { CookieUser } from './../../middleware/cookieMiddleware/cookie.middleware';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Injectable, Inject } from '@nestjs/common';
-import { ProgramEntityService } from 'src/database/entities/program/programEntity.service';
-import { Tag } from 'src/database/entities/tag/tag.entity';
-import { User } from 'src/database/entities/user/user.entity';
 import { TaskEntityService } from 'src/database/entities/task/task.service';
+import { ProgramEntityService } from 'src/database/entities/program/programEntity.service';
 import { ProgramTaskEntityService } from 'src/database/entities/programtask/programTaskEntityService.service';
 import { SharedEntitiesService } from 'src/database/entities/shared/shared.service';
+import { DataSource } from 'typeorm';
+import { CookieUser } from './../../middleware/cookieMiddleware/cookie.middleware';
+import { ProgramTask } from 'src/database/entities/programtask/programTask.entity';
+import { User } from 'src/database/entities/user/user.entity';
+import { Task } from 'src/database/entities/task/task.entity';
+import { Tag } from 'src/database/entities/tag/tag.entity';
 import {
   UpdateProgram,
   UpdateProgramDto,
@@ -22,6 +25,7 @@ export class ProgramService {
     private taskEntityService: TaskEntityService,
     private ptEntityService: ProgramTaskEntityService,
     private sharedEntititesService: SharedEntitiesService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   public async createProgram(requestBody: createProgramDto, user: any) {
@@ -162,6 +166,18 @@ export class ProgramService {
   }
 
   public async getPrograms(user: CookieUser) {
+    await this.sharedEntititesService.cloneProgramWithTasks(1, 1);
+    // const changedTasks = await this.dataManager
+    //   .getRepository(Task)
+    //   .createQueryBuilder('task')
+    //   .select(['task.taskName', '1 as ver'])
+    //   .addSelect(['1 as ver'])
+    //   .leftJoin(ProgramTask, 'program_task', 'program_task.task = task.taskId')
+    //   .where('program_task.program = :programId', { programId: 2 })
+    //   .getMany();
+
+    // console.log(changedTasks);
+
     const programsWithTasks =
       await this.programEntityService.getAllProgramsWithTasks({
         userId: user.userId,
@@ -230,3 +246,10 @@ export class ProgramService {
 
 
     */
+
+// const deneme = await this.programEntityService.programRepository
+//   .createQueryBuilder('program')
+//   .select('program.programName')
+//   .where('programId = 1')
+//   .getMany();
+// console.log('deneme', deneme);
