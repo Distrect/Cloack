@@ -159,7 +159,7 @@ export const databaseProviders = [
         task: newTask1,
       });
       const programTask2 = Data.manager.create(ProgramTask, {
-        order: 1,
+        order: 2,
         program: newProgram,
         task: newTask2,
       });
@@ -169,7 +169,7 @@ export const databaseProviders = [
         task: newTask3,
       });
       const programTask4 = Data.manager.create(ProgramTask, {
-        order: 1,
+        order: 2,
         program: newProgram1,
         task: newTask4,
       });

@@ -8,11 +8,14 @@ import {
   JoinColumn,
   Unique,
   Index,
+  RelationId,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
 import { ProgramTask } from '../programtask/programTask.entity';
 import { Calendar } from '../calendar/calendar.entity';
+import { ProgramSession } from '../programsession/programSession.entity';
+import { ProgramCalendar } from '../ProgramCalendar/programCalendarEntity.entity';
 
 export abstract class ProgramBase {
   @Column('varchar')
@@ -42,9 +45,18 @@ export class Program extends ProgramBase {
   @JoinColumn({ name: 'user' })
   user: User;
 
+  @RelationId((program: Program) => program.user)
+  userId: number;
+
   @OneToMany(() => ProgramTask, (pt) => pt.program)
   programtask: ProgramTask[];
 
   @OneToMany(() => Calendar, (c) => c.program)
   calendar: Calendar[];
+
+  @OneToMany(() => ProgramSession, (ps) => ps.program)
+  sessions: ProgramSession[];
+
+  @OneToMany(() => ProgramCalendar, (pc) => pc.program)
+  programCalendar: ProgramCalendar[];
 }

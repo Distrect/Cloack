@@ -33,7 +33,7 @@ export abstract class TaskBase {
 @Entity()
 export class Task extends TaskBase {
   @PrimaryGeneratedColumn()
-  taskId: string;
+  taskId: number;
   /*
   @PrimaryGeneratedColumn()
   taskId: string;
@@ -56,10 +56,17 @@ export class Task extends TaskBase {
   @Column({ type: 'boolean', default: false })
   isReusable: boolean;
 */
+
+  @Column({ type: 'integer', select: false, nullable: true })
+  version: number;
+
   @OneToMany(() => ProgramTask, (pt) => pt.task)
   programtask: ProgramTask[];
 
   @ManyToOne(() => User, (u) => u.tasks)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn()
   user: User;
+
+  @RelationId((task: Task) => task.user)
+  userId: number;
 }

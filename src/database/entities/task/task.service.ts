@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable, Inject } from '@nestjs/common';
 import { Task } from './task.entity';
 import { createTaskDto, updateTaskDto } from './dto/task.dto';
+import { ProgramTask } from '../programtask/programTask.entity';
 
 @Injectable()
 export class TaskEntityService {
@@ -47,4 +48,19 @@ export class TaskEntityService {
   public async saveTask(task: Task) {
     return await this.taskRepository.save(task);
   }
+
+  public async getTasksOfProgram(programId: number) {
+    return await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.programtask', 'program_task')
+      .where('program_task.program = :programId', { programId })
+      .getMany();
+  }
 }
+
+/*ProgramTask,
+        'program_task',
+        'program_task.program = :programId and program_task.task = task.taskId',
+        { programId },
+
+*/

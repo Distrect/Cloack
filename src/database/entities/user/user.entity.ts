@@ -8,6 +8,7 @@ import {
   BeforeInsert,
   Index,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { Program } from '../program/program.entity';
@@ -15,6 +16,7 @@ import { Task } from '../task/task.entity';
 import { Calendar } from '../calendar/calendar.entity';
 import { Friendship } from '../friendship/friendship.entity';
 import { Notification } from '../notification/notification.entity';
+import { CountdownSession } from '../countdownsession/countdownSession.entity';
 
 @Entity()
 export class User {
@@ -52,11 +54,11 @@ export class User {
   programs: Program[];
 
   @OneToMany(() => Task, (t) => t.user)
-  @JoinColumn({ name: 'user', referencedColumnName: 'user' })
+  @JoinColumn()
   tasks: Task[];
 
-  @OneToMany(() => Calendar, (c) => c.user)
-  calendar: Calendar[];
+  @OneToOne(() => Calendar)
+  calendar: Calendar;
 
   @OneToMany(() => Friendship, (f) => f.sender)
   sendFriend: Friendship[];
@@ -66,6 +68,9 @@ export class User {
 
   @OneToMany(() => Notification, (n) => n.user)
   notification: Notification[];
+
+  @OneToMany(() => CountdownSession, (cds) => cds.user)
+  sessions: CountdownSession[];
 
   @CreateDateColumn()
   createdAt: Date;

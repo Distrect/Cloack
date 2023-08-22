@@ -10,7 +10,7 @@ export class SharedProgram extends ProgramBase {
   tag: number;*/
 
   @Column('integer')
-  user: number;
+  userId: number;
 
   @Column('integer')
   version: number;

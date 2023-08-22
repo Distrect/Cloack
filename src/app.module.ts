@@ -10,6 +10,8 @@ import { FriendShipModule } from './modules/friendship/friendShip.module';
 import { CookieChecker } from './middleware/cookieMiddleware/cookie.middleware';
 import { JwtAuthModule } from './utils/jwt/jwt.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CountdownSessionModule } from './modules/countdownsession/countdownSession.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ProgramModule,
     TagModule,
     FriendShipModule,
+    CountdownSessionModule,
+    CalendarModule,
     JwtAuthModule,
     EventEmitterModule.forRoot(),
   ],

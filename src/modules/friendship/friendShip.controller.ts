@@ -1,6 +1,17 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  ParseIntPipe,
+  Param,
+} from '@nestjs/common';
 import { FriendShipService } from './friendShip.service';
-import { addFriendDto, searchDto } from './dto/friendship.dto';
+import {
+  addFriendDto,
+  answerFriendshipBody,
+  searchDto,
+} from './dto/friendship.dto';
 
 import {
   CookieUser,
@@ -35,5 +46,32 @@ export class FriendShipController {
         ? 'Friendship request is sended'
         : 'Frindship was terminated',
     };
+  }
+
+  @Get('/getFrienshipRequests')
+  public async GetFriendshipRequests(@StoredUser() user: CookieUser) {
+    const friendshipRequests =
+      await this.friendShipService.getFriendShipRequests(user.userId);
+    return {
+      ok: true,
+      message: 'Friendship request succesfully retrieved',
+      friendshipRequests,
+    };
+  }
+
+  @Post('/answerFriendshipRequest/:friendId')
+  public async AnswerFrirendshipRequest(
+    @Body() requestBody: answerFriendshipBody,
+    @StoredUser() user: CookieUser,
+    @Param('friendId', ParseIntPipe) frienId: number,
+  ) {
+    const result = await this.friendShipService.answerFriendshipRequest(
+      requestBody.friendshipId,
+      requestBody.answer,
+      user,
+      frienId,
+    );
+
+    return { ok: true, message: 'Succesfully answered to friendship' };
   }
 }

@@ -28,6 +28,8 @@ interface newRequest extends Request {
   user: CookieUser;
 }
 
+//JWT Expired hatasını düzgün şekilde ilet(Sesswion Expired)
+
 @Injectable()
 export class CookieChecker implements NestMiddleware {
   constructor(private jwtService: JwtAuthService) {}

@@ -6,8 +6,8 @@ import { ProgramTaskEntityService } from 'src/database/entities/programtask/prog
 import { SharedEntitiesService } from 'src/database/entities/shared/shared.service';
 import { DataSource } from 'typeorm';
 import { CookieUser } from './../../middleware/cookieMiddleware/cookie.middleware';
-import { ProgramTask } from 'src/database/entities/programtask/programTask.entity';
 import { User } from 'src/database/entities/user/user.entity';
+import { ProgramTask } from 'src/database/entities/programtask/programTask.entity';
 import { Task } from 'src/database/entities/task/task.entity';
 import { Tag } from 'src/database/entities/tag/tag.entity';
 import {

@@ -19,3 +19,11 @@ export class addFriendDto {
   @IsNotEmpty()
   public type: type;
 }
+
+export class answerFriendshipBody {
+  @IsNotEmpty()
+  public friendshipId: number;
+
+  @IsNotEmpty()
+  public answer: boolean;
+}

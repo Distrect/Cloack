@@ -13,10 +13,10 @@ export class SharedProgramTask extends ProgramTaskBase {
   version: number;
 
   @Column('integer')
-  program: number;
+  programId: number;
 
   @Column('integer')
-  task: number;
+  taskId: number;
 }
 
 /*import {

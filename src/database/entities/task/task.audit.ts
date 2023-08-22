@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
 import { TaskBase } from './task.entity';
 
 @Entity()
@@ -9,12 +8,12 @@ export class SharedTask extends TaskBase {
 
   @Column('integer')
   taskId: number;
+  /*
+  @Column({ type: 'integer' })
+  programTask: number;*/
 
   @Column({ type: 'integer' })
-  programTask: number;
-
-  @Column({ type: 'integer' })
-  user: number;
+  userId: number;
 
   @Column('integer')
   version: number;

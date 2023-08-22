@@ -5,6 +5,8 @@ import { addFriendDto, searchDto } from './dto/friendship.dto';
 import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 import { friendShipStatus } from 'src/database/entities/friendship/friendship.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { FriendshipAcceptedEvent } from 'src/event/notification.event';
+
 @Injectable()
 export class FriendShipService {
   constructor(
@@ -44,8 +46,27 @@ export class FriendShipService {
     await this.friendShipEntityService.save(friendShip);
     return false;
   }
-  @OnEvent('rock')
-  public deneme2() {
-    console.log('rcky');
+
+  public async getFriendShipRequests(userId: number) {
+    return await this.friendShipEntityService.getFriendshipRequests(userId);
+  }
+
+  public async answerFriendshipRequest(
+    friendshipId: number,
+    answer: true | false,
+    user: CookieUser,
+    friendId: number,
+  ) {
+    const result = await this.friendShipEntityService.answerFriendshipRequest(
+      friendshipId,
+      answer,
+    );
+
+    if (answer) {
+      const friendshipEvent = new FriendshipAcceptedEvent(user, friendId);
+      this.eventEmitter.emit('notification', friendshipEvent);
+    }
+
+    return result;
   }
 }
