@@ -1,7 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { DatabaseModule } from 'src/database/database.module';
 import { UserEntityModule } from 'src/database/entities/user/user.module';
-import { userProvider } from 'src/database/entities/user/user.provider';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { EmailChecker } from 'src/middleware/emailMiddleware/emailChecker.middleware';

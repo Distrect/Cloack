@@ -12,9 +12,21 @@ import { JwtAuthModule } from './utils/jwt/jwt.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CountdownSessionModule } from './modules/countdownsession/countdownSession.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { NotificationSocketModule } from './websocket/notificationSocket/notificationSocket.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        customProps: (req, res) => ({ context: 'HTTP' }),
+        transport: {
+          target: 'pino-pretty',
+          options: { singleLine: true },
+        },
+      },
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     ProgramModule,
@@ -23,13 +35,13 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     CountdownSessionModule,
     CalendarModule,
     JwtAuthModule,
-    EventEmitterModule.forRoot(),
+    NotificationSocketModule,
   ],
   controllers: [AppController],
   providers: [AppService, MyLoggerService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CookieChecker).forRoutes('*');
+    // consumer.apply(CookieChecker).forRoutes('*');
   }
 }

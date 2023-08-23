@@ -1,6 +1,7 @@
 // jwt/jwt.service.ts
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 
 @Injectable()
 export class JwtAuthService {
@@ -10,7 +11,7 @@ export class JwtAuthService {
     return this.jwtService.signAsync(payload, options);
   }
 
-  async verifyToken(token: string): Promise<any> {
+  async verifyToken(token: string): Promise<CookieUser> {
     return this.jwtService.verifyAsync(token);
   }
 }

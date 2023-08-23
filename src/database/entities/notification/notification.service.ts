@@ -17,6 +17,10 @@ export class NotificationEntityService {
     return await this.saveNotificitaionEntity(newNotification);
   }
 
+  public async update(notificationId: number, params: Partial<Notification>) {
+    return await this.notificationRepository.update({ notificationId }, params);
+  }
+
   private async saveNotificitaionEntity(notification: Notification) {
     return await this.notificationRepository.save(notification);
   }

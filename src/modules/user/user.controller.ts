@@ -30,6 +30,12 @@ export class UserController {
     const response = await this.userService.AuthenticateUser(authenticateBody);
     return { ok: true, ...response };
   }
+
+  @Post('/logout')
+  public async Logout(@Res() res: Response) {
+    res.clearCookie('authentication');
+    return { ok: true, message: 'Use succesfully logout' };
+  }
 }
 
 /*

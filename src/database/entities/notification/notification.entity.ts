@@ -14,6 +14,9 @@ export class Notification {
   @Column({ type: 'boolean', default: false })
   isRead: boolean;
 
+  @Column({ type: 'date', nullable: true })
+  seenDate: Date;
+
   @Column('text')
   message: string;
 
