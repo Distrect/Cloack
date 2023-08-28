@@ -3,7 +3,7 @@ import { UserEntityModule } from 'src/database/entities/user/user.module';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { EmailChecker } from 'src/middleware/emailMiddleware/emailChecker.middleware';
-import { JwtAuthModule } from 'src/utils/jwt/jwt.module';
+import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 import { MailModule } from 'src/services/mailer/mail.module';
 
 @Module({

@@ -3,7 +3,7 @@ import { TagEntityModule } from 'src/database/entities/tag/tagEntity.module';
 import { TagController } from './tag.controller';
 import { TagService } from './tag.service';
 import { CookieChecker } from 'src/middleware/cookieMiddleware/cookie.middleware';
-import { JwtAuthModule } from 'src/utils/jwt/jwt.module';
+import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 
 @Module({
   imports: [TagEntityModule, JwtAuthModule],

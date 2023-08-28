@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 // import { CustomHttpException } from 'src/error/allErros';
-import { JwtAuthService } from 'src/utils/jwt/jwt.service';
+import { JwtAuthService } from 'src/services/jwt/jwt.service';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 export interface CookieUser {
   userId: number;
@@ -35,25 +36,31 @@ export class CookieChecker implements NestMiddleware {
   constructor(private jwtService: JwtAuthService) {}
 
   public async use(req: newRequest, res: Response, next: NextFunction) {
-    const cookies = req.cookies['authentication'];
-    if (!cookies) {
-      throw new UnauthorizedException();
+    try {
+      const cookies = req.cookies['authentication'];
+      if (!cookies) {
+        throw new UnauthorizedException();
+      }
+
+      const verified: CookieUser = await this.jwtService.verifyToken(cookies);
+
+      const todayDate = new Date();
+
+      if (verified.exp * 1000 < todayDate.getTime()) {
+        throw new HttpException(
+          'Your session has expired. Please log in again',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      req.user = verified;
+
+      next();
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new UnauthorizedException();
+      }
     }
-
-    const verified: CookieUser = await this.jwtService.verifyToken(cookies);
-
-    const todayDate = new Date();
-
-    if (verified.exp * 1000 < todayDate.getTime()) {
-      throw new HttpException(
-        'Your session has expired. Please log in again',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    req.user = verified;
-
-    next();
   }
 }
 

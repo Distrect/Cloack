@@ -2,6 +2,7 @@ import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { registerDto } from 'src/modules/user/dto/user.dto';
+import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 //import { IUserLogin } from 'src/modules/user/dto/user.dto';
 
 @Injectable()
@@ -38,6 +39,16 @@ export class UserEntityService {
     return await this.userRepository.save(user);
   }
 
+  public async updateUser(user: CookieUser, params: any) {
+    const updated = this.userRepository
+      .createQueryBuilder('user')
+      .update()
+      .set({ ...params })
+      .where('user.userId = :userId', { userId: user.userId })
+      .execute();
+    return updated;
+  }
+
   public async searchUser(params: string[], userId: number, skip: number = 0) {
     return await this.userRepository
       .createQueryBuilder('user')
@@ -64,25 +75,6 @@ export class UserEntityService {
       .limit(2)
       .offset(skip * 2)
       .getMany();
-
-    // return await this.userRepository
-    //   .createQueryBuilder('user')
-    //   .leftJoinAndSelect(
-    //     'user.receiveFriend',
-    //     'friendship',
-    //     'friendship.sender = :userId',
-    //     { userId },
-    //   )
-    //   .where(`MATCH(user.name) AGAINST ('${params.join(' ')} IN BOOLEAN MODE')`)
-    //   .orWhere(
-    //     `MATCH(user.lastname) AGAINST ('${params.join(' ')} IN BOOLEAN MODE')`,
-    //   )
-    //   .orWhere(
-    //     `MATCH(user.fullname) AGAINST ('${params.join(
-    //       ' ',
-    //     )} IN NATURAL LANGUAGE MODE')`,
-    //   )
-    //   .getMany();
   }
 }
 
@@ -109,3 +101,22 @@ export class UserEntityService {
           param2: params.join(' '),
         },
         */
+
+// return await this.userRepository
+//   .createQueryBuilder('user')
+//   .leftJoinAndSelect(
+//     'user.receiveFriend',
+//     'friendship',
+//     'friendship.sender = :userId',
+//     { userId },
+//   )
+//   .where(`MATCH(user.name) AGAINST ('${params.join(' ')} IN BOOLEAN MODE')`)
+//   .orWhere(
+//     `MATCH(user.lastname) AGAINST ('${params.join(' ')} IN BOOLEAN MODE')`,
+//   )
+//   .orWhere(
+//     `MATCH(user.fullname) AGAINST ('${params.join(
+//       ' ',
+//     )} IN NATURAL LANGUAGE MODE')`,
+//   )
+//   .getMany();

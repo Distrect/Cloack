@@ -1,28 +1,21 @@
+import { Injectable, Logger } from '@nestjs/common';
+
 import {
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
-  WsResponse,
 } from '@nestjs/websockets';
-import {
-  Inject,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+
 import { Server, Socket } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
-import { JwtAuthService } from 'src/utils/jwt/jwt.service';
-import { extractCookie } from 'src/util';
+import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 import { NotificationEvent } from 'src/event/notification.event';
 import { NotificationEntityService } from 'src/database/entities/notification/notification.service';
-import { Observable, of } from 'rxjs';
+import { ClientStorageService } from '../clientStorage/clientStorage.service';
+import { BaseSocket } from '../baseSocket';
 
 const configService = new ConfigService();
 
@@ -43,9 +36,7 @@ interface NotificationSee {
     credentials: true,
   },
 })
-export class NotificationGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class NotificationGateway extends BaseSocket {
   private readonly logger = new Logger(NotificationGateway.name);
   private readonly Clients = new Map<number, ClientMap>();
 
@@ -53,40 +44,11 @@ export class NotificationGateway
   private server: Server;
 
   constructor(
+    private clientStorageService: ClientStorageService,
     private jwtService: JwtAuthService,
     private notificationRepository: NotificationEntityService,
-  ) {}
-
-  public afterInit(server: Server) {
-    this.logger.log('Notification Socket has been created and ready to serve');
-  }
-
-  public async handleConnection(client: Socket) {
-    const clientId = client.id;
-    const authCookie = extractCookie(
-      'authentication',
-      client.handshake.headers?.cookie,
-    );
-
-    console.log(authCookie);
-    if (!authCookie) {
-      this.sendError(client, new UnauthorizedException());
-      return;
-    }
-
-    const user: CookieUser = await this.jwtService.verifyToken(authCookie);
-
-    this.Clients.set(user.userId, { user, client });
-    client.emit('birikikelime', 'dsadsadsad');
-  }
-
-  public async handleDisconnect(client: Socket) {
-    const authCookie = extractCookie(
-      'authorization',
-      client.handshake.headers?.cookie,
-    );
-    const { userId } = await this.jwtService.verifyToken(authCookie);
-    this.Clients.delete(userId);
+  ) {
+    super(clientStorageService, jwtService, NotificationGateway.name);
   }
 
   public sendError(client: Socket, error: Error) {
@@ -97,11 +59,11 @@ export class NotificationGateway
     userId: number,
     notification: NotificationEvent, //değiştir
   ) {
-    if (!this.Clients.has(userId)) return;
+    const user = this.clientStorageService.getClient(userId);
 
-    const { client } = this.Clients.get(userId);
+    if (!user) return;
 
-    client.emit('notificaiton', notification);
+    user.client.emit('notificaiton', notification);
   }
 
   @SubscribeMessage('seeNotifictaion')
@@ -113,6 +75,14 @@ export class NotificationGateway
       seenDate: payload.seeDate,
     });
 
+    return { seen: true };
+  }
+  @SubscribeMessage('deneme')
+  public async deneme(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload?: NotificationSee,
+  ) {
+    console.log('This m y kingdom cum');
     return { seen: true };
   }
 }

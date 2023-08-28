@@ -1,6 +1,7 @@
 // jwt/jwt.service.ts
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { TokenExpiredError } from 'jsonwebtoken';
 import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 
 @Injectable()
@@ -11,7 +12,12 @@ export class JwtAuthService {
     return this.jwtService.signAsync(payload, options);
   }
 
-  async verifyToken(token: string): Promise<CookieUser> {
-    return this.jwtService.verifyAsync(token);
+  async verifyToken(
+    accesToken: string,
+    // refreshToken: string,
+  ): Promise<CookieUser> {
+    const user = this.jwtService.verifyAsync<CookieUser>(accesToken);
+
+    return user;
   }
 }

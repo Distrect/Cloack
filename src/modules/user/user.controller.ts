@@ -1,8 +1,11 @@
-import { Controller, Post, Body, Get, Res, Inject, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Patch, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Response } from 'express';
-import { IUserLogin, authenticateDto, registerDto } from './dto/user.dto';
-import { Request } from 'express';
+import { authenticateDto, registerDto } from './dto/user.dto';
+import {
+  CookieUser,
+  StoredUser,
+} from 'src/middleware/cookieMiddleware/cookie.middleware';
 
 @Controller('user')
 export class UserController {
@@ -19,8 +22,11 @@ export class UserController {
     @Body() userDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const token = await this.userService.logUser(userDto);
-    res.cookie('authentication', token, { maxAge: 300000000 });
+    const oneDay = 1 * 24 * 60 * 60;
+
+    const [token, refresh] = await this.userService.logUser(userDto);
+    res.cookie('authentication', token, { maxAge: oneDay });
+    // res.cookie('resfresh', refresh, { maxAge: 2 * oneDay });
     return { ok: true, message: 'You are succesfully authortized' };
   }
 
@@ -32,20 +38,30 @@ export class UserController {
   }
 
   @Post('/logout')
-  public async Logout(@Res() res: Response) {
+  public async Logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('authentication');
     return { ok: true, message: 'Use succesfully logout' };
   }
+
+  @Get('/profile')
+  public async GetProfile(@StoredUser() user: CookieUser) {
+    const profile = await this.userService.getProfile(user);
+    return {
+      ok: true,
+      message: 'User profile has been suessfully retrieved',
+      profile,
+    };
+  }
+  @Patch('/updatepofile')
+  public async PatchGetProfile(
+    @StoredUser() user: CookieUser,
+    @Body() requestBody: any,
+  ) {
+    const profile = await this.userService.updateUser(user, requestBody);
+    return {
+      ok: true,
+      message: 'User profile has been suessfully updated',
+      profile,
+    };
+  }
 }
-
-/*
-
-    const userIp = req.ip.replace(/^::ffff:/, '');
-    const userIpData = await fetch(
-      `https://api.iplocation.net/?ip=${userIp}&format=json`,
-    )
-      .then((res) => res.json())
-      .catch(console.error);
-
-    console.log(userIp, userIpData);
-*/

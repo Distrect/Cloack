@@ -7,6 +7,7 @@ import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import { CryptoUtil } from './utils/crypto.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: true });

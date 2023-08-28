@@ -1,8 +1,9 @@
+import { CookieUser } from './../../middleware/cookieMiddleware/cookie.middleware';
 import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { IUserLogin, authenticateDto, registerDto } from './dto/user.dto';
 import { UserEntityService } from 'src/database/entities/user/user.service';
 import { CryptoUtil } from 'src/utils/crypto.util';
-import { JwtAuthService } from 'src/utils/jwt/jwt.service';
+import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import * as moment from 'moment';
 import { MailService } from 'src/services/mailer/mail.service';
 import { User } from 'src/database/entities/user/user.entity';
@@ -33,8 +34,12 @@ export class UserService {
       { ...user },
       { expiresIn: '1d' },
     );
+    const refresh = await this.jwtService.createToken(
+      { ...user },
+      { expiresIn: '2d', algorithm: 'HS512' },
+    );
 
-    return signed;
+    return [signed, refresh];
   }
 
   public async registerUser(registerUser: registerDto) {
@@ -126,6 +131,13 @@ export class UserService {
     await this.userEntityService.saveUser(user);
 
     return { message: 'You are now clear to engage' };
+  }
+
+  public async getProfile(user: CookieUser) {
+    return this.userEntityService.findUser({ userId: user.userId });
+  }
+  public async updateUser(user: CookieUser, params: any) {
+    return this.userEntityService.findUser({ userId: user.userId });
   }
 }
 

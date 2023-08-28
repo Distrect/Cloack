@@ -7,7 +7,7 @@ import { CustomHttpException } from 'src/error/allErros';
 export class EmailChecker implements NestMiddleware {
   public async use(req: Request, res: Response, next: NextFunction) {
     const { body } = req;
-    console.log('body', body, req.body);
+
     const validatedEmail = await validate({
       validateSMTP: false,
       email: body?.email,

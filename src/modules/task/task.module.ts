@@ -3,7 +3,7 @@ import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { TaskEntityModule } from 'src/database/entities/task/task.module';
 import { CookieChecker } from 'src/middleware/cookieMiddleware/cookie.middleware';
-import { JwtAuthModule } from 'src/utils/jwt/jwt.module';
+import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 
 @Module({
   imports: [TaskEntityModule, JwtAuthModule],
