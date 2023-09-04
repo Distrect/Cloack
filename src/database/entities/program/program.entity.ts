@@ -9,6 +9,7 @@ import {
   Unique,
   Index,
   RelationId,
+  VirtualColumn,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
@@ -26,8 +27,18 @@ export abstract class ProgramBase {
 
   @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
+
   @Column({ type: 'integer', default: 1 })
   version: number;
+
+  @Column({
+    select: false,
+    nullable: true,
+    insert: false,
+    update: false,
+    type: 'varchar',
+  })
+  totalDuration: string;
 }
 
 @Entity()
@@ -59,4 +70,5 @@ export class Program extends ProgramBase {
 
   @OneToMany(() => ProgramCalendar, (pc) => pc.program)
   programCalendar: ProgramCalendar[];
+  totalsDuration: number;
 }

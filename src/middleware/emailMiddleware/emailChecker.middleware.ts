@@ -7,6 +7,8 @@ import { CustomHttpException } from 'src/error/allErros';
 export class EmailChecker implements NestMiddleware {
   public async use(req: Request, res: Response, next: NextFunction) {
     const { body } = req;
+    /*
+    console.log(body);
 
     const validatedEmail = await validate({
       validateSMTP: false,
@@ -17,7 +19,7 @@ export class EmailChecker implements NestMiddleware {
       throw new CustomHttpException('Invalid fields', 400, [
         { field: 'email' },
       ]);
-    }
+    }*/
 
     next();
   }

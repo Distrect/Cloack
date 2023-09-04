@@ -1,4 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -7,8 +6,9 @@ import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
-import { CryptoUtil } from './utils/crypto.util';
+import { CustomValidationPipe } from './pipes/validation.pipe';
 
+//
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: true });
 
@@ -31,7 +31,7 @@ async function bootstrap() {
   app.use(cookieParser('2c9344c1997c9b0470783ddbe1903c8b'));
   app.use(compression());
   app.useGlobalFilters(new GlobalErrorHandler());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new CustomValidationPipe());
   await app.listen(3000);
 }
 bootstrap();

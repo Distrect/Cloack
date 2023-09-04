@@ -12,6 +12,6 @@ import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 })
 export class TaskModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CookieChecker).forRoutes('task/createTask');
+    // consumer.apply(CookieChecker).forRoutes('task/createTask');
   }
 }

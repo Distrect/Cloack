@@ -44,7 +44,8 @@ export class MailService {
         from: this.configSrvice.getMailOptions()['user'],
         html: this.templates[template](context),
       })
-      .then((res) => res);
+      .then((res) => res)
+      .catch((err) => console.log('Mailer error:', err));
   }
 
   //   public async send

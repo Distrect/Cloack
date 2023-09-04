@@ -26,6 +26,222 @@ export const databaseProviders = [
 
       const Data = await dataSource.initialize();
 
+      const save = async (entity) => await Data.manager.save(entity);
+
+      const user = await save(
+        Data.manager.create(User, {
+          name: 'Samet',
+          lastname: 'Sarıçiçek',
+          email: 'sametsie34@gmail.com',
+          isAuthenticated: true,
+          password: '12345',
+          digits: { digits: 12345, exprationDate: new Date() },
+        }),
+      );
+
+      const program = await save(
+        Data.manager.create(Program, {
+          programName: 'Samet Program',
+          programDescription: 'Long Text',
+          user: { userId: 1 },
+          version: 1,
+        }),
+      );
+
+      const task1 = await save(
+        Data.manager.create(Task, {
+          order: 1,
+          taskName: 'Task 1',
+          isReusable: false,
+          user: { userId: 1 },
+          version: 1,
+          taskDuration: '1:00:00',
+          taskColor: 'red',
+          taskDescription: 'long text',
+        }),
+      );
+      const task2 = await save(
+        Data.manager.create(Task, {
+          order: 1,
+          taskName: 'Task 2',
+          isReusable: false,
+          user: { userId: 1 },
+          version: 1,
+          taskDuration: '1:00:00',
+          taskColor: 'red',
+          taskDescription: 'long text',
+        }),
+      );
+      const programTask1 = Data.manager.create(ProgramTask, {
+        order: 1,
+        program: program,
+        task: task1,
+        isReusable: false,
+      });
+      const programTask2 = Data.manager.create(ProgramTask, {
+        order: 2,
+        program: program,
+        task: task2,
+        isReusable: false,
+      });
+
+      await Data.manager.save(programTask1);
+      await Data.manager.save(programTask2);
+
+      return new Promise((res) => res(Data));
+    },
+    inject: [GlobalConfigService],
+  },
+];
+
+//ekelmedir
+/*const user = await dataSource.manager.create(User, {
+        name: 'Samet',
+        lastname: 'Sarıçiçek',
+        digits: { digits: 1, exprationDate: new Date() },
+        email: 'ee3wqewq',
+        isAuthenticated: true,
+        password: '321321',
+      });*/
+/*
+      const DataS = await dataSource.initialize();
+      const repo = DataS.manager.getRepository(AuditingUser);
+      console.log(repo);*/
+/*
+      const userRepo = DataS.getRepository(User);
+      userRepo.create({
+        name: 'Samet',
+        lastname: 'Sarıçiçek',
+        digits: { digits: 1, exprationDate: new Date() },
+        email: 'ee3wqewq',
+        isAuthenticated: true,
+        password: '321321',
+      });*/
+/*
+      const newUser = DataS.manager.create(User, {
+        name: 'Samet',
+        lastname: 'Sarıçiçek',
+        digits: { digits: 1, exprationDate: new Date() },
+        email: 'ee3wqewq',
+        isAuthenticated: true,
+        password: '321321',
+      });
+
+      await DataS.manager.save(newUser);
+
+      const newTag = DataS.manager.create(Tag, {
+        tagColor: 'red',
+        tagName: 'ehe',
+      });
+
+   
+      await DataS.manager.save(newTag);*/
+
+/*import { AuditingSubscriber } from 'typeorm-auditing';
+import { AuditingUser } from './entities/user/user.audit';
+import { User } from './entities/user/user.entity';
+import { AuditingTag } from './entities/tag/tag.audit';
+import { Tag } from './entities/tag/tag.entity';*/
+
+/*
+      const Data = await dataSource.initialize();
+      const save = async (entiti) => await Data.manager.save(entiti);
+
+      const program1 = Data.manager.create(Program, {
+        isDeleted: false,
+        programDescription: 'Long text',
+        programName: 'Program 1',
+      });
+      console.log(program1);
+      await save(program1);
+
+      const task1 = Data.manager.create(Task, {
+        order: 1,
+        taskColor: 'red',
+        taskDescription: 'Task 1',
+        taskName: 'Task1',
+        taskDuration: '00:15:00',
+      });
+      await save(task1);
+
+      const programTask = Data.manager.create(ProgramTask, {
+        order: 1,
+      });
+
+      programTask.program = program1;
+      programTask.task = task1;
+
+      await save(programTask);
+
+      // program1.programtask = [task1.taskId];
+
+      // await save(program1);
+
+      return Data;*/
+
+/*let result = await programRepo
+        .createQueryBuilder('program')
+        .innerJoinAndSelect(
+          'program.programtask',
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .innerJoinAndSelect(
+          'program_task.task',
+          'task',
+          'task.taskId = program_Task.task',
+        )
+        .getMany();
+
+      // const result = await Data.manager
+      //   .createQueryBuilder(Program)
+      //   .leftJoin(
+      //     ProgramTask,
+      //     'program_task',
+      //     'program.programId = program_task.program',
+      //   )
+      //   .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
+      //   .getMany();
+
+      console.log(result[0]?.programtask?.[0], result);
+
+      /*
+      Data.manager.delete(newTag, {
+        where: {
+          tagId: newTag.tagId,
+        },
+      });*/
+
+/*
+      const auditRepo = Data.manager.getRepository(AuditingUser);
+
+      const res = await auditRepo
+        .createQueryBuilder('auditing_user')
+        .innerJoinAndMapMany(
+          'auditing_user.tags',
+          AuditingTag,
+          'tags',
+          'tags.user = auditing_user.userId',
+        )
+        .getMany();
+
+      console.log(res);
+*/
+
+/*
+      const result = await Data.manager
+        .createQueryBuilder(Program)
+        .leftJoin(
+          ProgramTask,
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
+        .getMany();
+      console.log(result);
+*/
+
+/*
       const save = async (en: any) => await Data.manager.save(en);
 
       const user1 = Data.manager.create(User, {
@@ -209,156 +425,4 @@ export const databaseProviders = [
         .addSelect(['tag.tagName'])
         .getMany();
       // console.log(userrs?.[0]?.tags[0], userrs);
-
-      return new Promise((res) => res(Data));
-    },
-    inject: [GlobalConfigService],
-  },
-];
-
-//ekelmedir
-/*const user = await dataSource.manager.create(User, {
-        name: 'Samet',
-        lastname: 'Sarıçiçek',
-        digits: { digits: 1, exprationDate: new Date() },
-        email: 'ee3wqewq',
-        isAuthenticated: true,
-        password: '321321',
-      });*/
-/*
-      const DataS = await dataSource.initialize();
-      const repo = DataS.manager.getRepository(AuditingUser);
-      console.log(repo);*/
-/*
-      const userRepo = DataS.getRepository(User);
-      userRepo.create({
-        name: 'Samet',
-        lastname: 'Sarıçiçek',
-        digits: { digits: 1, exprationDate: new Date() },
-        email: 'ee3wqewq',
-        isAuthenticated: true,
-        password: '321321',
-      });*/
-/*
-      const newUser = DataS.manager.create(User, {
-        name: 'Samet',
-        lastname: 'Sarıçiçek',
-        digits: { digits: 1, exprationDate: new Date() },
-        email: 'ee3wqewq',
-        isAuthenticated: true,
-        password: '321321',
-      });
-
-      await DataS.manager.save(newUser);
-
-      const newTag = DataS.manager.create(Tag, {
-        tagColor: 'red',
-        tagName: 'ehe',
-      });
-
-   
-      await DataS.manager.save(newTag);*/
-
-/*import { AuditingSubscriber } from 'typeorm-auditing';
-import { AuditingUser } from './entities/user/user.audit';
-import { User } from './entities/user/user.entity';
-import { AuditingTag } from './entities/tag/tag.audit';
-import { Tag } from './entities/tag/tag.entity';*/
-
-/*
-      const Data = await dataSource.initialize();
-      const save = async (entiti) => await Data.manager.save(entiti);
-
-      const program1 = Data.manager.create(Program, {
-        isDeleted: false,
-        programDescription: 'Long text',
-        programName: 'Program 1',
-      });
-      console.log(program1);
-      await save(program1);
-
-      const task1 = Data.manager.create(Task, {
-        order: 1,
-        taskColor: 'red',
-        taskDescription: 'Task 1',
-        taskName: 'Task1',
-        taskDuration: '00:15:00',
-      });
-      await save(task1);
-
-      const programTask = Data.manager.create(ProgramTask, {
-        order: 1,
-      });
-
-      programTask.program = program1;
-      programTask.task = task1;
-
-      await save(programTask);
-
-      // program1.programtask = [task1.taskId];
-
-      // await save(program1);
-
-      return Data;*/
-
-/*let result = await programRepo
-        .createQueryBuilder('program')
-        .innerJoinAndSelect(
-          'program.programtask',
-          'program_task',
-          'program.programId = program_task.program',
-        )
-        .innerJoinAndSelect(
-          'program_task.task',
-          'task',
-          'task.taskId = program_Task.task',
-        )
-        .getMany();
-
-      // const result = await Data.manager
-      //   .createQueryBuilder(Program)
-      //   .leftJoin(
-      //     ProgramTask,
-      //     'program_task',
-      //     'program.programId = program_task.program',
-      //   )
-      //   .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
-      //   .getMany();
-
-      console.log(result[0]?.programtask?.[0], result);
-
-      /*
-      Data.manager.delete(newTag, {
-        where: {
-          tagId: newTag.tagId,
-        },
-      });*/
-
-/*
-      const auditRepo = Data.manager.getRepository(AuditingUser);
-
-      const res = await auditRepo
-        .createQueryBuilder('auditing_user')
-        .innerJoinAndMapMany(
-          'auditing_user.tags',
-          AuditingTag,
-          'tags',
-          'tags.user = auditing_user.userId',
-        )
-        .getMany();
-
-      console.log(res);
-*/
-
-/*
-      const result = await Data.manager
-        .createQueryBuilder(Program)
-        .leftJoin(
-          ProgramTask,
-          'program_task',
-          'program.programId = program_task.program',
-        )
-        .leftJoinAndMapOne('task', 'task', 'task.taskId = program_task.task')
-        .getMany();
-      console.log(result);
 */

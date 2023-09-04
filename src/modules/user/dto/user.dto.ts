@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export interface IUserLogin {
   email?: string;
@@ -10,15 +10,22 @@ export class registerDto {
   @ApiProperty()
   @IsNotEmpty()
   public name: string;
+
   @ApiProperty()
   @IsNotEmpty()
   public lastname: string;
+
   @ApiProperty()
   @IsNotEmpty()
+  @IsEmail()
   public email: string;
+
   @ApiProperty()
   @IsNotEmpty()
   public password: string;
+
+  @IsNotEmpty()
+  public passwordAgain: string;
 }
 
 export class authenticateDto {
@@ -26,5 +33,5 @@ export class authenticateDto {
   public email: string;
 
   @IsNotEmpty()
-  public authenticationCode: number;
+  public authCode: number;
 }

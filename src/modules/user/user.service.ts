@@ -43,39 +43,50 @@ export class UserService {
   }
 
   public async registerUser(registerUser: registerDto) {
-    const createdUser = await this.userEntityService.createUser(registerUser);
+    try {
+      const createdUser = await this.userEntityService.createUser(registerUser);
 
-    if (createdUser.digits) {
-      if (createdUser.isAuthenticated)
-        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      console.log(createdUser);
 
-      const credentials = createdUser.digits;
-      const todayDate = new Date();
+      if (createdUser.digits) {
+        if (createdUser.isAuthenticated)
+          throw new HttpException('User already exists', HttpStatus.CONFLICT);
 
-      if (todayDate.getTime() < credentials.exprationDate.getTime()) {
-        return {
-          message:
-            'Please enter your authentication code was sent to your email',
-        };
-      } else {
-        return await this.refreshUser(createdUser);
+        const credentials = createdUser.digits;
+        const expirationDate = new Date(credentials.exprationDate);
+        const todayDate = new Date();
+
+        if (todayDate.getTime() < expirationDate.getTime()) {
+          return {
+            message:
+              'Please enter your authentication code was sent to your email',
+          };
+        } else {
+          return await this.refreshUser(createdUser);
+        }
       }
+
+      const randomDigits = Math.floor(Math.random() * 1000000);
+      const currentDate = moment();
+
+      createdUser.digits = {
+        digits: randomDigits,
+        exprationDate: currentDate.add(1, 'day').toDate(),
+      };
+
+      const result = await Promise.all([
+        this.userEntityService.saveUser(createdUser),
+        this.mailService.sendEmailMail(
+          'email',
+          randomDigits,
+          createdUser.email,
+        ),
+      ]);
+
+      return { message: 'Authentication code was sent to your email.' };
+    } catch (error) {
+      console.log('errrerererere', error);
     }
-
-    const randomDigits = Math.floor(Math.random() * 1000000);
-    const currentDate = moment();
-
-    createdUser.digits = {
-      digits: randomDigits,
-      exprationDate: currentDate.add(1, 'day').toDate(),
-    };
-
-    const result = await Promise.all([
-      this.userEntityService.saveUser(createdUser),
-      this.mailService.sendEmailMail('email', randomDigits, createdUser.email),
-    ]);
-
-    return { message: 'Authentication code was sent to your email.' };
   }
 
   private async refreshUser(user: User) {
@@ -94,7 +105,7 @@ export class UserService {
     ]).catch((err) => console.log('refresh', err));
 
     return {
-      message: `New authentication code is sent to ${user.email}`,
+      message: `Your code is expired.New authentication code is sent to ${user.email}`,
     };
   }
 
@@ -120,7 +131,7 @@ export class UserService {
       return await this.refreshUser(user);
     }
 
-    if (requetsBody.authenticationCode !== user.digits.digits) {
+    if (requetsBody.authCode !== user.digits.digits) {
       throw new HttpException(
         'Wrong Authentication Code',
         HttpStatus.BAD_REQUEST,

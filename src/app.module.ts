@@ -1,5 +1,10 @@
 import { ProgramModule } from './modules/program/program.module';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -35,16 +40,23 @@ import { MessageSocketModule } from './websocket/meesageSocket/messageSocket.mod
     ProgramModule,
     CalendarModule,
     FriendShipModule,
+    MessageSocketModule,
     CountdownSessionModule,
-    MessageSocketModule,
     NotificationSocketModule,
-    MessageSocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CookieChecker)
+      .exclude(
+        { path: 'user/login', method: RequestMethod.POST },
+        { path: 'user/register', method: RequestMethod.POST },
+        { path: 'user/authenticate', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
     // consumer.apply(CookieChecker).exclude('user').forRoutes('*');
   }
 }

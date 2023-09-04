@@ -24,7 +24,7 @@ import { DatabaseModule } from 'src/database/database.module';
 })
 export class ProgramModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CookieChecker).forRoutes('program/**');
+    // consumer.apply(CookieChecker).forRoutes('program/**');
     // .forRoutes('program/deneme', 'program/createProgram');
   }
 }

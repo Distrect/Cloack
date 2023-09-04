@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-// import { CustomHttpException } from 'src/error/allErros';
 import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import { TokenExpiredError } from 'jsonwebtoken';
 
@@ -37,14 +36,18 @@ export class CookieChecker implements NestMiddleware {
 
   public async use(req: newRequest, res: Response, next: NextFunction) {
     try {
+      console.log('Cookie checker middleware get called');
       const cookies = req.cookies['authentication'];
+      console.log('cookies', cookies);
       if (!cookies) {
         throw new UnauthorizedException();
       }
 
       const verified: CookieUser = await this.jwtService.verifyToken(cookies);
+      console.log('verified', verified);
 
       const todayDate = new Date();
+      console.log('today Date', todayDate);
 
       if (verified.exp * 1000 < todayDate.getTime()) {
         throw new HttpException(
@@ -57,8 +60,11 @@ export class CookieChecker implements NestMiddleware {
 
       next();
     } catch (error) {
+      console.log(error);
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException();
+      } else {
+        throw error;
       }
     }
   }

@@ -13,8 +13,8 @@ import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 })
 export class TagModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(CookieChecker)
-      .forRoutes('tag/getTags', 'tag/updateTag', 'tag/deleteTag');
+    // consumer
+    //   .apply(CookieChecker)
+    //   .forRoutes('tag/getTags', 'tag/updateTag', 'tag/deleteTag');
   }
 }

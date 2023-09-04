@@ -14,6 +14,6 @@ import { MailModule } from 'src/services/mailer/mail.module';
 })
 export class UserModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {
-    consumer.apply(EmailChecker).forRoutes('user/login', 'user/register');
+    // consumer.apply(EmailChecker).forRoutes('user/login', 'user/register');
   }
 }

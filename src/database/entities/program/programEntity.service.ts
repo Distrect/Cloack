@@ -45,25 +45,32 @@ export class ProgramEntityService {
   }
 
   public async getAllProgramsWithTasks({ userId }: { userId: number }) {
-    return await this.programRepository.find({
-      where: {
-        user: {
-          userId,
-        },
-      },
-
-      relations: {
-        programtask: {
-          task: true,
-          program: true,
-        },
-      },
-      order: {
-        programtask: {
-          order: 'ASC',
-        },
-      },
-    });
+    return await this.programRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.programtask', 'program_task')
+      .leftJoinAndSelect('program_task.task', 'task')
+      /*.select([
+        'program.programName',
+        'program.programId',
+        'program_task.programTaskId',
+        'program_task.order',
+        'task.taskName',
+        'task.taskDuration',
+        // 'SUM(TIME_TO_SEC(task.taskDuration)) as TotalDuration',
+      ])*/
+      /*.addSelect([
+        'SUM(TIME_TO_SEC(task.taskDuration))',
+        'program.totalDuration',
+      ])*/
+      /*.addGroupBy('program.programName')
+      .addGroupBy('program.programId')
+      .addGroupBy('program_task.programTaskId')
+      .addGroupBy('program_task.order')
+      .addGroupBy('task.taskName')
+      .addGroupBy('task.taskDuration')*/
+      .orderBy('program_task.order', 'ASC')
+      .where('program.user = :userId', { userId })
+      .getMany();
   }
 }
 
@@ -127,3 +134,58 @@ export class ProgramEntityService {
       )
       .addSelect(['program_task.order', 'task.taskName'])
       .getMany();*/
+
+/*return await this.programRepository.find({
+      where: {
+        user: {
+          userId,
+        },
+      },
+
+      relations: {
+        programtask: {
+          task: true,
+          program: true,
+        },
+      },
+      order: {
+        programtask: {
+          order: 'ASC',
+        },
+      },
+    });
+  }*/
+
+// .createQueryBuilder('program')
+// .leftJoinAndSelect('program.programtask', 'program_task')
+// .leftJoinAndSelect('program_task.task', 'task')
+// .select([
+//   'program.programId',
+//   'program.programName',
+//   'program.programDescription',
+//   // Include all other columns from the Program entity
+//   'program_task.programTaskId',
+//   'program_task.order',
+//   'program_task.isReusable',
+//   // Include all columns from the ProgramTask entity
+//   'task.taskId',
+//   'task.taskName',
+//   'task.taskDescription',
+//   'task.taskDuration',
+//   'task.taskColor',
+//   'task.isReusable',
+//   // Include all columns from the Task entity
+//   'SUM(TIME_TO_SEC(task.taskDuration)) AS totalDuration',
+// ])
+// .groupBy('program.programId')
+// .getRawMany();
+/*.leftJoin('program.programtask', 'program_task')
+      .leftJoin('program_task.task', 'task')
+      .select([
+        'program.programId',
+        'program.programName',
+        'SUM(TIME_TO_SEC(task.taskDuration)) AS totalDuration',
+      ])
+      .groupBy('program.programId, program.programName')
+      .getRawMany();*/
+/**/

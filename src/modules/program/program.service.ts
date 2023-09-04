@@ -10,6 +10,7 @@ import { User } from 'src/database/entities/user/user.entity';
 import { ProgramTask } from 'src/database/entities/programtask/programTask.entity';
 import { Task } from 'src/database/entities/task/task.entity';
 import { Tag } from 'src/database/entities/tag/tag.entity';
+import * as moment from 'moment';
 import {
   UpdateProgram,
   UpdateProgramDto,
@@ -166,22 +167,19 @@ export class ProgramService {
   }
 
   public async getPrograms(user: CookieUser) {
-    await this.sharedEntititesService.cloneProgramWithTasks(1, 1);
-    // const changedTasks = await this.dataManager
-    //   .getRepository(Task)
-    //   .createQueryBuilder('task')
-    //   .select(['task.taskName', '1 as ver'])
-    //   .addSelect(['1 as ver'])
-    //   .leftJoin(ProgramTask, 'program_task', 'program_task.task = task.taskId')
-    //   .where('program_task.program = :programId', { programId: 2 })
-    //   .getMany();
-
-    // console.log(changedTasks);
-
     const programsWithTasks =
       await this.programEntityService.getAllProgramsWithTasks({
         userId: user.userId,
       });
+
+    programsWithTasks.map((program, i) => {
+      const duration = moment.duration();
+      program.programtask.map((pt) => {
+        const { task } = pt;
+        duration.add(task.taskDuration);
+      });
+      program.totalsDuration = duration.as('milliseconds');
+    });
 
     return programsWithTasks;
   }
@@ -253,3 +251,15 @@ export class ProgramService {
 //   .where('programId = 1')
 //   .getMany();
 // console.log('deneme', deneme);
+/*   await this.sharedEntititesService.cloneProgramWithTasks(1, 1);
+    // const changedTasks = await this.dataManager
+    //   .getRepository(Task)
+    //   .createQueryBuilder('task')
+    //   .select(['task.taskName', '1 as ver'])
+    //   .addSelect(['1 as ver'])
+    //   .leftJoin(ProgramTask, 'program_task', 'program_task.task = task.taskId')
+    //   .where('program_task.program = :programId', { programId: 2 })
+    //   .getMany();
+
+    // console.log(changedTasks);
+ */
