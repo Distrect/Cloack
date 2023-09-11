@@ -10,6 +10,7 @@ import {
   Index,
   RelationId,
   VirtualColumn,
+  JoinTable,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
@@ -17,6 +18,7 @@ import { ProgramTask } from '../programtask/programTask.entity';
 import { Calendar } from '../calendar/calendar.entity';
 import { ProgramSession } from '../programsession/programSession.entity';
 import { ProgramCalendar } from '../ProgramCalendar/programCalendarEntity.entity';
+import { Task } from '../task/task.entity';
 
 export abstract class ProgramBase {
   @Column('varchar')
@@ -38,7 +40,9 @@ export abstract class ProgramBase {
     update: false,
     type: 'varchar',
   })
-  totalDuration: string;
+  total: string;
+
+  public totalsDuration: number;
 }
 
 @Entity()
@@ -48,6 +52,7 @@ export class Program extends ProgramBase {
   @PrimaryGeneratedColumn()
   programId: number;
 
+  tasks: Task[];
   @OneToOne(() => Tag, { onDelete: 'SET NULL' })
   @JoinColumn()
   tag: Tag;
@@ -70,5 +75,4 @@ export class Program extends ProgramBase {
 
   @OneToMany(() => ProgramCalendar, (pc) => pc.program)
   programCalendar: ProgramCalendar[];
-  totalsDuration: number;
 }

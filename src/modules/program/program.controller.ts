@@ -33,6 +33,19 @@ export class ProgramController {
     };
   }
 
+  @Get('/program/:programId')
+  public async GetOneProgram(
+    @StoredUser() user: CookieUser,
+    @Param('programId', ParseIntPipe) programId: number,
+  ) {
+    const program = await this.programService.getProgram(user, programId);
+    return {
+      ok: true,
+      message: 'Program has been retrieved',
+      program,
+    };
+  }
+
   @Post('/createProgram')
   public async CreateProgram(
     @Body() body: createProgramDto,
@@ -45,10 +58,12 @@ export class ProgramController {
 
   @Patch('/edit/:programId')
   public async EditProgram(
+    @StoredUser() user: CookieUser,
     @Body() requestBody: UpdateProgram,
     @Param('programId', ParseIntPipe) programId: number,
   ) {
     const program = await this.programService.updateProgram(
+      user,
       programId,
       requestBody,
     );
@@ -57,16 +72,24 @@ export class ProgramController {
   }
 
   @Delete('/delete/:programId')
-  public async DeleteProgram(@Param('programId') programId) {
+  public async DeleteProgram(
+    @StoredUser() user: CookieUser,
+    @Param('programId') programId,
+  ) {
     const deletedProgram = await this.programService.deleteProgram(programId);
     return { ok: true, message: 'Program is deleted', program: deletedProgram };
   }
 
   @Post('/:programId')
   public async UpdateProgramContent(
+    @StoredUser() user: CookieUser,
     @Param('programId', ParseIntPipe) programId: number,
     @Body() requestBody: UpdateProgramDto[],
   ) {
-    await this.programService.updateProgramWithTasks(programId, requestBody);
+    await this.programService.updateProgramWithTasks(
+      user,
+      programId,
+      requestBody,
+    );
   }
 }

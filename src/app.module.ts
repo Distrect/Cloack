@@ -19,6 +19,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
 import { NotificationSocketModule } from './websocket/notificationSocket/notificationSocket.module';
 import { LoggerModule } from 'nestjs-pino';
 import { MessageSocketModule } from './websocket/meesageSocket/messageSocket.module';
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MessageSocketModule } from './websocket/meesageSocket/messageSocket.mod
     ConfigModule.forRoot({ isGlobal: true }),
     TagModule,
     UserModule,
+    TaskModule,
     JwtAuthModule,
     ProgramModule,
     CalendarModule,

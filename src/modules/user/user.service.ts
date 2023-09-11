@@ -32,7 +32,7 @@ export class UserService {
 
     const signed = await this.jwtService.createToken(
       { ...user },
-      { expiresIn: '1d' },
+      { expiresIn: 24 * 60 * 60 },
     );
     const refresh = await this.jwtService.createToken(
       { ...user },

@@ -22,7 +22,7 @@ export class UserController {
     @Body() userDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const oneDay = 1 * 24 * 60 * 60;
+    const oneDay = 1 * 24 * 60 * 60 * 1000;
 
     const [token, refresh] = await this.userService.logUser(userDto);
     res.cookie('authentication', token, { maxAge: oneDay });

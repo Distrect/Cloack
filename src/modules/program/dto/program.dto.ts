@@ -63,6 +63,8 @@ export class UpdateProgramDto {
 
   public deleted: boolean;
 
+  public edited: boolean;
+
   public programTaskId: number;
 
   @IsNotEmpty()

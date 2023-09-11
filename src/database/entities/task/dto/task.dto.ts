@@ -12,6 +12,8 @@ export class createTaskDto {
   public taskColor: string;
 
   public isReusable: boolean;
+
+  public order?: number;
 }
 
 export class updateTaskDto {
@@ -24,4 +26,5 @@ export class updateTaskDto {
   public taskColor: string;
 
   public isReusable?: boolean;
+  public userId?: number;
 }

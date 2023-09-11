@@ -34,28 +34,6 @@ export abstract class TaskBase {
 export class Task extends TaskBase {
   @PrimaryGeneratedColumn()
   taskId: number;
-  /*
-  @PrimaryGeneratedColumn()
-  taskId: string;
-  
-  @Column('integer')
-  order: number;
-
-  @Column('varchar')
-  taskName: string;
-
-  @Column('text')
-  taskDescription: string;
-
-  @Column('time')
-  taskDuration: string;
-
-  @Column('varchar')
-  taskColor: string;
-
-  @Column({ type: 'boolean', default: false })
-  isReusable: boolean;
-*/
 
   @Column({ type: 'integer', select: false, nullable: true })
   version: number;

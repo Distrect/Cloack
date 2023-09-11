@@ -72,6 +72,30 @@ export const databaseProviders = [
           taskDescription: 'long text',
         }),
       );
+      const task3 = await save(
+        Data.manager.create(Task, {
+          order: 1,
+          taskName: 'Task 3',
+          isReusable: true,
+          user: { userId: 1 },
+          version: 1,
+          taskDuration: '1:00:00',
+          taskColor: 'red',
+          taskDescription: 'long text',
+        }),
+      );
+      const task4 = await save(
+        Data.manager.create(Task, {
+          order: 1,
+          taskName: 'Task 4',
+          isReusable: true,
+          user: { userId: 1 },
+          version: 1,
+          taskDuration: '1:00:00',
+          taskColor: 'red',
+          taskDescription: 'long text',
+        }),
+      );
       const programTask1 = Data.manager.create(ProgramTask, {
         order: 1,
         program: program,
@@ -87,7 +111,33 @@ export const databaseProviders = [
 
       await Data.manager.save(programTask1);
       await Data.manager.save(programTask2);
+      await Data.manager.save(task3);
+      await Data.manager.save(task4);
+      const programRepo = Data.manager.getRepository(Program);
 
+      /*const result = await programRepo
+        .createQueryBuilder('program')
+        .leftJoin(
+          'program.programtask',
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .getMany();*/
+      /*const result = await programRepo
+        .createQueryBuilder('program')
+        .leftJoin(
+          'program.programtask',
+          'program_task',
+          'program.programId = program_task.program',
+        )
+        .leftJoinAndMapMany(
+          'program.tasks',
+          'program_task.task',
+          'task',
+          'task.taskId = program_task.task',
+        )
+        .orderBy('program_task.order', 'ASC')
+        .getMany();*/
       return new Promise((res) => res(Data));
     },
     inject: [GlobalConfigService],

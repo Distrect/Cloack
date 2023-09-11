@@ -29,11 +29,22 @@ export class ProgramEntityService {
     });
   }
 
-  public async getProgram(params: {
-    programId?: number;
-    programName?: string;
-  }) {
-    return await this.programRepository.findOne({ where: { ...params } });
+  public async getProgram(userId: number, programId: number) {
+    return await this.programRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.programtask', 'program_task')
+      .leftJoinAndSelect('program_task.task', 'task')
+      // .addSelect(
+      //   'SUM(TIME_TO_SEC(task.taskDuration)) * COUNT(DISTINCT program_task.programTaskId) / COUNT(*)',
+      //   'program_total',
+      // )
+      .orderBy('program_task.order', 'ASC')
+      .groupBy('program.programId')
+      .addGroupBy('task.taskId')
+      .addGroupBy('program_Task.programTaskId')
+      .where('program.user = :userId', { userId })
+      .andWhere('program.programId = :programId', { programId })
+      .getOne();
   }
 
   public async updateProgram(criteria: EditCriteria, partial: UpdateProgram) {
@@ -49,26 +60,14 @@ export class ProgramEntityService {
       .createQueryBuilder('program')
       .leftJoinAndSelect('program.programtask', 'program_task')
       .leftJoinAndSelect('program_task.task', 'task')
-      /*.select([
-        'program.programName',
-        'program.programId',
-        'program_task.programTaskId',
-        'program_task.order',
-        'task.taskName',
-        'task.taskDuration',
-        // 'SUM(TIME_TO_SEC(task.taskDuration)) as TotalDuration',
-      ])*/
-      /*.addSelect([
-        'SUM(TIME_TO_SEC(task.taskDuration))',
-        'program.totalDuration',
-      ])*/
-      /*.addGroupBy('program.programName')
-      .addGroupBy('program.programId')
-      .addGroupBy('program_task.programTaskId')
-      .addGroupBy('program_task.order')
-      .addGroupBy('task.taskName')
-      .addGroupBy('task.taskDuration')*/
+      // .addSelect(
+      //   'SUM(TIME_TO_SEC(task.taskDuration)) * COUNT(DISTINCT program_task.programTaskId) / COUNT(*)',
+      //   'program_total',
+      // )
       .orderBy('program_task.order', 'ASC')
+      .groupBy('program.programId')
+      .addGroupBy('task.taskId')
+      .addGroupBy('program_Task.programTaskId')
       .where('program.user = :userId', { userId })
       .getMany();
   }
@@ -189,3 +188,23 @@ export class ProgramEntityService {
       .groupBy('program.programId, program.programName')
       .getRawMany();*/
 /**/
+
+/*.select([
+        'program.programName',
+        'program.programId',
+        'program_task.programTaskId',
+        'program_task.order',
+        'task.taskName',
+        'task.taskDuration',
+        // 'SUM(TIME_TO_SEC(task.taskDuration)) as TotalDuration',
+      ])*/
+/*.addSelect([
+        'SUM(TIME_TO_SEC(task.taskDuration))',
+        'program.totalDuration',
+      ])*/
+/*.addGroupBy('program.programName')
+      .addGroupBy('program.programId')
+      .addGroupBy('program_task.programTaskId')
+      .addGroupBy('program_task.order')
+      .addGroupBy('task.taskName')
+      .addGroupBy('task.taskDuration')*/

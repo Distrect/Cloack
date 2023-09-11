@@ -47,7 +47,11 @@ export class ProgramService {
     return savedProgram;
   }
 
-  public async updateProgram(programId: number, properties: UpdateProgram) {
+  public async updateProgram(
+    user: CookieUser,
+    programId: number,
+    properties: UpdateProgram,
+  ) {
     const updated = await this.programEntityService.updateProgram(
       { programId },
       properties,
@@ -61,6 +65,7 @@ export class ProgramService {
   }
 
   public async updateProgramWithTasks(
+    user: CookieUser,
     programId: number,
     requestBody: UpdateProgramDto[],
   ) {
@@ -71,15 +76,17 @@ export class ProgramService {
     const toBeUpdatedProgramTasks = [];
     const toBeCreatedProgramTasks = [];
 
-    const program = await this.getProgram(programId);
+    const program = await this.getProgram(user, programId);
     const version = program.version + 1;
 
     requestBody.forEach((element) => {
       {
+        console.log(element);
         const {
-          isReusable,
+          isReusable, //rgfd
           programTaskId,
           order,
+          edited,
           newOrder,
           created,
           deleted,
@@ -97,11 +104,11 @@ export class ProgramService {
             return;
           }
 
-          if (newOrder && newOrder !== order) {
+          if (/*newOrder &&*/ newOrder !== order) {
             toBeUpdatedProgramTasks.push({ order: newOrder, programTaskId });
           }
 
-          if (task.edited) {
+          if (edited) {
             toBeUpdatedTasks.push(task);
             return;
           }
@@ -117,6 +124,7 @@ export class ProgramService {
               return;
             }
           } else {
+            //
             toBeCreatedProgramTasks.push({
               programId,
               taskId: task.taskId,
@@ -130,7 +138,13 @@ export class ProgramService {
 
     const createdTasks = await Promise.all([
       ...toBeCreatedTasks.map((tbct) =>
-        this.taskEntityService.createTask(tbct.task),
+        this.taskEntityService.createTask({
+          ...tbct.task,
+          order: tbct.order,
+          taskDescription: '123',
+          taskColor: '321321',
+          version,
+        }),
       ),
     ]);
 
@@ -142,6 +156,24 @@ export class ProgramService {
         order: toBeCreatedTasks[i].order,
       });
     });
+
+    console.log(
+      'To Be Created Programtasks',
+      toBeCreatedProgramTasks,
+      '\n',
+      'toBeDeletedTasks',
+      toBeDeletedTasks,
+      '\n',
+      'To Be Created Tasks',
+      toBeCreatedTasks,
+      '\n',
+      'to be updated programtasks',
+      toBeUpdatedProgramTasks,
+      '\n',
+      'to be updated Tasks', //
+      toBeUpdatedTasks,
+      '\n',
+    );
 
     const allResponse = await Promise.all([
       ...toBeDeletedTasks.map((tbdt) =>
@@ -163,7 +195,7 @@ export class ProgramService {
 
     console.log(allResponse);
 
-    await this.sharedEntititesService.cloneProgramWithTasks(version, programId);
+    /*await this.sharedEntititesService.cloneProgramWithTasks(version, programId);*/
   }
 
   public async getPrograms(user: CookieUser) {
@@ -172,6 +204,7 @@ export class ProgramService {
         userId: user.userId,
       });
 
+    console.log(programsWithTasks);
     programsWithTasks.map((program, i) => {
       const duration = moment.duration();
       program.programtask.map((pt) => {
@@ -184,8 +217,8 @@ export class ProgramService {
     return programsWithTasks;
   }
 
-  public async getProgram(programId: number) {
-    return await this.programEntityService.getProgram({ programId });
+  public async getProgram(user: CookieUser, programId: number) {
+    return await this.programEntityService.getProgram(user.userId, programId);
   }
 }
 

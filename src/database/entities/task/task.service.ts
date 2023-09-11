@@ -17,6 +17,7 @@ export class TaskEntityService {
   }
 
   public async createTask(task: createTaskDto, userId?: number) {
+    console.log(task);
     const freshTask = this.taskRepository.create({
       ...task,
       ...(userId ? { user: { userId } } : {}),
@@ -36,10 +37,11 @@ export class TaskEntityService {
   }
 
   public async updateTask(task: updateTaskDto, taskId: number) {
+    const { userId, ...rest } = task;
     const updated = await this.taskRepository
       .createQueryBuilder('task')
       .update(Task)
-      .set({ ...task })
+      .set({ ...rest })
       .where('taskId = :taskId', { taskId })
       .execute();
     return updated;
