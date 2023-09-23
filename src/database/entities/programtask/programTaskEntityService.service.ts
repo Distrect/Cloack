@@ -61,4 +61,13 @@ export class ProgramTaskEntityService {
   public async save(entity: ProgramTask) {
     return await this.programTaskRepository.save(entity);
   }
+
+  public async getProgramTaskOfProgram(programId: number) {
+    return await this.programTaskRepository
+      .createQueryBuilder('program_task')
+      .leftJoinAndSelect('program_task.task', 'task')
+      .where('program_task.program = :programId', { programId })
+      .orderBy('program_task.order', 'ASC')
+      .getMany();
+  }
 }

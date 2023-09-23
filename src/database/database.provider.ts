@@ -6,6 +6,7 @@ import { ProgramTask } from './entities/programtask/programTask.entity';
 import { User } from './entities/user/user.entity';
 import { Tag } from './entities/tag/tag.entity';
 import { Friendship } from './entities/friendship/friendship.entity';
+import { CountdownSession } from './entities/countdownsession/countdownSession.entity';
 
 export const databaseProviders = [
   {
@@ -26,94 +27,111 @@ export const databaseProviders = [
 
       const Data = await dataSource.initialize();
 
-      const save = async (entity) => await Data.manager.save(entity);
+      const init = async () => {
+        const save = async (entity) => await Data.manager.save(entity);
 
-      const user = await save(
-        Data.manager.create(User, {
-          name: 'Samet',
-          lastname: 'Sarıçiçek',
-          email: 'sametsie34@gmail.com',
-          isAuthenticated: true,
-          password: '12345',
-          digits: { digits: 12345, exprationDate: new Date() },
-        }),
-      );
+        const user = await save(
+          Data.manager.create(User, {
+            name: 'Samet',
+            lastname: 'Sarıçiçek',
+            email: 'sametsie34@gmail.com',
+            isAuthenticated: true,
+            password: '12345',
+            digits: { digits: 12345, exprationDate: new Date() },
+          }),
+        );
 
-      const program = await save(
-        Data.manager.create(Program, {
-          programName: 'Samet Program',
-          programDescription: 'Long Text',
-          user: { userId: 1 },
-          version: 1,
-        }),
-      );
+        const cs = await save(
+          Data.manager.create(CountdownSession, {
+            user: { userId: user.userId },
+          }),
+        );
 
-      const task1 = await save(
-        Data.manager.create(Task, {
+        const program = await save(
+          Data.manager.create(Program, {
+            programName: 'Samet Program',
+            programDescription: 'Long Text',
+            user: { userId: 1 },
+            version: 1,
+          }),
+        );
+
+        const task1 = await save(
+          Data.manager.create(Task, {
+            order: 1,
+            taskName: 'Task 1',
+            isReusable: false,
+            user: { userId: 1 },
+            version: 1,
+            taskDuration: '0:00:10',
+            taskColor: 'red',
+            taskDescription: 'long text',
+          }),
+        );
+        const task2 = await save(
+          Data.manager.create(Task, {
+            order: 1,
+            taskName: 'Task 2',
+            isReusable: false,
+            user: { userId: 1 },
+            version: 1,
+            taskDuration: '0:00:05',
+            taskColor: 'red',
+            taskDescription: 'long text',
+          }),
+        );
+        const task3 = await save(
+          Data.manager.create(Task, {
+            order: 1,
+            taskName: 'Task 3',
+            isReusable: true,
+            user: { userId: 1 },
+            version: 1,
+            taskDuration: '1:00:00',
+            taskColor: 'red',
+            taskDescription: 'long text',
+          }),
+        );
+        const task4 = await save(
+          Data.manager.create(Task, {
+            order: 1,
+            taskName: 'Task 4',
+            isReusable: true,
+            user: { userId: 1 },
+            version: 1,
+            taskDuration: '0:00:05',
+            taskColor: 'red',
+            taskDescription: 'long text',
+          }),
+        );
+        const programTask1 = Data.manager.create(ProgramTask, {
           order: 1,
-          taskName: 'Task 1',
+          program: program,
+          task: task1,
           isReusable: false,
-          user: { userId: 1 },
-          version: 1,
-          taskDuration: '1:00:00',
-          taskColor: 'red',
-          taskDescription: 'long text',
-        }),
-      );
-      const task2 = await save(
-        Data.manager.create(Task, {
-          order: 1,
-          taskName: 'Task 2',
+        });
+        const programTask2 = Data.manager.create(ProgramTask, {
+          order: 2,
+          program: program,
+          task: task2,
           isReusable: false,
-          user: { userId: 1 },
-          version: 1,
-          taskDuration: '1:00:00',
-          taskColor: 'red',
-          taskDescription: 'long text',
-        }),
-      );
-      const task3 = await save(
-        Data.manager.create(Task, {
-          order: 1,
-          taskName: 'Task 3',
-          isReusable: true,
-          user: { userId: 1 },
-          version: 1,
-          taskDuration: '1:00:00',
-          taskColor: 'red',
-          taskDescription: 'long text',
-        }),
-      );
-      const task4 = await save(
-        Data.manager.create(Task, {
-          order: 1,
-          taskName: 'Task 4',
-          isReusable: true,
-          user: { userId: 1 },
-          version: 1,
-          taskDuration: '1:00:00',
-          taskColor: 'red',
-          taskDescription: 'long text',
-        }),
-      );
-      const programTask1 = Data.manager.create(ProgramTask, {
-        order: 1,
-        program: program,
-        task: task1,
-        isReusable: false,
-      });
-      const programTask2 = Data.manager.create(ProgramTask, {
-        order: 2,
-        program: program,
-        task: task2,
-        isReusable: false,
-      });
+        });
 
-      await Data.manager.save(programTask1);
-      await Data.manager.save(programTask2);
-      await Data.manager.save(task3);
-      await Data.manager.save(task4);
-      const programRepo = Data.manager.getRepository(Program);
+        await Data.manager.save(programTask1);
+        await Data.manager.save(programTask2);
+        await Data.manager.save(task3);
+        await Data.manager.save(task4);
+        const programRepo = Data.manager.getRepository(Program);
+      };
+
+      configModule.getDev() ? await init() : '';
+
+      const TaskRepo = Data.getRepository(Task);
+
+      const tasks = await TaskRepo.createQueryBuilder('task')
+        .select(['taskName as x'])
+        .getRawMany();
+      console.log(tasks);
 
       /*const result = await programRepo
         .createQueryBuilder('program')

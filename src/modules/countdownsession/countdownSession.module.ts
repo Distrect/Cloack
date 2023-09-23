@@ -3,9 +3,14 @@ import { CountdownSessionEntityModule } from 'src/database/entities/countdownses
 import { CountdownSessionController } from './countdownSession.controler';
 import { TaskEntityModule } from 'src/database/entities/task/task.module';
 import { CountdownSessionService } from './countdownSession.service';
+import { ProgramTaskEntityModule } from 'src/database/entities/programtask/programTaskEntityModule.module';
 
 @Module({
-  imports: [CountdownSessionEntityModule, TaskEntityModule],
+  imports: [
+    CountdownSessionEntityModule,
+    TaskEntityModule,
+    ProgramTaskEntityModule,
+  ],
   providers: [CountdownSessionService],
   controllers: [CountdownSessionController],
 })

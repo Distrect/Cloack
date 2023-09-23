@@ -37,6 +37,10 @@ export class GlobalConfigService {
       : { synchronize: false, dropSchema: false };
   }
 
+  public getDev(): boolean {
+    return this.configService.get<string>('isDev') === 'false' ? false : true;
+  }
+
   public get(property: string) {
     return this.configService.get(property);
   }

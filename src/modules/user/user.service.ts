@@ -7,12 +7,17 @@ import { JwtAuthService } from 'src/services/jwt/jwt.service';
 import * as moment from 'moment';
 import { MailService } from 'src/services/mailer/mail.service';
 import { User } from 'src/database/entities/user/user.entity';
+import { CountdownSessionEntityService } from 'src/database/entities/countdownsession/countdownSessionEntity.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(UserEntityService)
     private userEntityService: UserEntityService,
+
+    @Inject(CountdownSessionEntityService)
+    private countdownSessionRep: CountdownSessionEntityService,
+
     private jwtService: JwtAuthService,
     private mailService: MailService,
   ) {}
@@ -140,7 +145,7 @@ export class UserService {
 
     user.isAuthenticated = true;
     await this.userEntityService.saveUser(user);
-
+    await this.countdownSessionRep.createSessionInstance(user.userId);
     return { message: 'You are now clear to engage' };
   }
 

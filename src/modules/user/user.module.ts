@@ -5,9 +5,15 @@ import { UserController } from './user.controller';
 import { EmailChecker } from 'src/middleware/emailMiddleware/emailChecker.middleware';
 import { JwtAuthModule } from 'src/services/jwt/jwt.module';
 import { MailModule } from 'src/services/mailer/mail.module';
+import { CountdownSessionEntityModule } from 'src/database/entities/countdownsession/countdownSessionEntity.module';
 
 @Module({
-  imports: [UserEntityModule, JwtAuthModule, MailModule],
+  imports: [
+    UserEntityModule,
+    JwtAuthModule,
+    MailModule,
+    CountdownSessionEntityModule,
+  ],
   exports: [],
   controllers: [UserController],
   providers: [UserService],

@@ -22,8 +22,8 @@ export class SessionTask extends TaskBase {
   @PrimaryGeneratedColumn()
   sessionTaskId: number;
 
-  @Column({ type: 'time', nullable: true })
-  elapsedTime: string;
+  @Column({ type: 'bigint', nullable: true })
+  elapsed?: number;
 
   @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.INLINE })
   status: TaskStatus;
