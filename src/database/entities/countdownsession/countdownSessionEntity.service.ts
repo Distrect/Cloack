@@ -30,6 +30,38 @@ export class CountdownSessionEntityService {
     private sessionTaskRep: Repository<SessionTask>,
   ) {}
 
+  public async checkIfCountdownSessionExist(countdownSessionId: number) {
+    return await this.countdonwnSessionRep.findOne({
+      where: { countdownSessionId },
+    });
+  }
+
+  public async restartCountdown(countdownSessionId: number) {
+    const sessionTasks = await this.sessionTaskRep
+      .createQueryBuilder('session_task')
+      .leftJoin(
+        'session_task.programSession',
+        'program_session',
+        'session_task.programSession = program_session.programSessionId',
+      )
+      .leftJoin(
+        'program_session.session',
+        'countdown_session',
+        'program_session.session = countdown_session.countdownSessionId',
+      )
+      .where('countdown_session.countdownSessionId = :countdownSessionId', {
+        countdownSessionId,
+      })
+      .getMany();
+
+    sessionTasks.forEach((sT) => {
+      sT.elapsed = 0;
+      sT.status = TaskStatus.INLINE;
+    });
+
+    return this.sessionTaskRep.save(sessionTasks);
+  }
+
   public async getCountdownSessionScore(
     countdownSessionId: number,
   ): Promise<IScore> {
@@ -47,7 +79,7 @@ export class CountdownSessionEntityService {
         { countdownSessionId },
       )
       .select([
-        'TIME_TO_SEC(SUM(session_task.taskDuration)) as totalDuration',
+        'SUM(TIME_TO_SEC(session_task.taskDuration)) as totalDuration',
         'SUM(session_task.elapsed) as totalElapsed',
       ])
       .getRawOne();
@@ -157,6 +189,7 @@ export class CountdownSessionEntityService {
 
           return {
             ...task,
+            status: TaskStatus.INLINE,
             order: rest.order,
             programSession: { programSessionId },
           };

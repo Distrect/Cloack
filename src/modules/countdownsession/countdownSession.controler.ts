@@ -6,6 +6,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CountdownSessionService } from './countdownSession.service';
 
@@ -58,7 +60,10 @@ export class CountdownSessionController {
       await this.countdownSessionService.getCountdownSessionWithProgramsAndTasks(
         countdonwSessionId,
       );
-    console.log(countdownSessionWithProgramAndItsTasks);
+
+    if (countdownSessionWithProgramAndItsTasks.programSessions.length === 0)
+      throw new HttpException('Countdown Not Found', HttpStatus.NOT_FOUND);
+
     return {
       ok: true,
       message: 'RetrieveSuccessfull',
@@ -170,10 +175,20 @@ export class CountdownSessionController {
     @Param('countdownSessionId', ParseIntPipe) countdownSessionId: number,
   ) {
     console.log(body);
-    const result = await this.countdownSessionService.saveResults(
+    const score = await this.countdownSessionService.saveResults(
       body,
       countdownSessionId,
     );
-    return { ok: true, message: 'Vay', result };
+    return { ok: true, message: 'Countdown Data Has Been Saved', score };
+  }
+
+  @Post('/restartCountdownSession/:countdownSessionId')
+  public async RestartCountdown(
+    @Param('countdownSessionId', ParseIntPipe) countdownSessionId: number,
+  ) {
+    await this.countdownSessionService.restartCountdownSession(
+      countdownSessionId,
+    );
+    return { ok: true, message: 'Countdown Has Been Restarted' };
   }
 }

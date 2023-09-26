@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { CookieUser } from 'src/middleware/cookieMiddleware/cookie.middleware';
 import { TaskEntityService } from 'src/database/entities/task/task.service';
 import { CountdownSessionEntityService } from 'src/database/entities/countdownsession/countdownSessionEntity.service';
@@ -70,11 +70,6 @@ export class CountdownSessionService {
     const { userId } = user;
     const { programId } = body;
 
-    console.log(userId, programId);
-
-    //get countdown session
-
-    // const countdownSession = await this.sessionRep.getCountdownSession(userId);
     const countdownSession = await this.sessionRep.createSessionInstance(
       userId,
     );
@@ -127,6 +122,12 @@ export class CountdownSessionService {
     const session = await this.sessionRep.getSessionProgramsWithTasks(
       countdownSessionId,
     );
+
+    if (session === null) {
+      throw new HttpException('Countdown Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    console.log('Sesssionsss', session);
 
     session.programSessions.map((ps) => {
       const programDuration = calculateTotalDuration(ps.tasks);
@@ -202,9 +203,32 @@ export class CountdownSessionService {
     const { totalDuration, totalElapsed } =
       await this.sessionRep.getCountdownSessionScore(countdownSessionId);
 
-    const score = (parseInt(totalElapsed) * 100) / parseInt(totalDuration);
+    console.log('TOTAL DURATİON', totalDuration, 'TOTAL ELAPSED', totalElapsed);
 
-    console.log('score data', score);
+    const score = (
+      (parseInt(totalElapsed) * 100) /
+      (parseInt(totalDuration) * 1000)
+    ).toFixed(0);
+
+    console.log(
+      'Score',
+      score,
+      parseInt(totalElapsed),
+      parseInt(totalDuration) * 1000,
+    );
+
+    return score;
+  }
+
+  public async restartCountdownSession(countdownSessionId: number) {
+    if (!this.sessionRep.checkIfCountdownSessionExist(countdownSessionId)) {
+      throw new HttpException(
+        'Countdown Not Found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    await this.sessionRep.restartCountdown(countdownSessionId);
+    return true;
   }
 }
 
