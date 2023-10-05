@@ -1,5 +1,5 @@
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { TaskEntityService } from 'src/database/entities/task/task.service';
 import { ProgramEntityService } from 'src/database/entities/program/programEntity.service';
 import { ProgramTaskEntityService } from 'src/database/entities/programtask/programTaskEntityService.service';
@@ -15,7 +15,9 @@ import {
   UpdateProgram,
   UpdateProgramDto,
   createProgramDto,
+  getProgramDto,
 } from './dto/program.dto';
+import { CustomHttpException, ProgramErrors } from 'src/error/allErros';
 
 @Injectable()
 export class ProgramService {
@@ -29,22 +31,29 @@ export class ProgramService {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  public async createProgram(requestBody: createProgramDto, user: any) {
+  public async createProgram(requestBody: createProgramDto, user: CookieUser) {
     const freshProgram = await this.programEntityService.createProgram(
       requestBody,
+      user.userId,
     );
 
-    freshProgram.user = { userId: user.userId } as User;
+    console.log('Frssh Program', freshProgram);
+    // if (requestBody.tagId) {
+    //   freshProgram.tag = { tagId: requestBody.tagId } as Tag;
+    // }
 
-    if (requestBody.tagId) {
-      freshProgram.tag = { tagId: requestBody.tagId } as Tag;
-    }
+    // const savedProgram = await this.programEntityService.saveProgram(
+    //   freshProgram,
+    // );
 
-    const savedProgram = await this.programEntityService.saveProgram(
-      freshProgram,
+    const programWithTasks = await this.getProgram(
+      user,
+      freshProgram.programId,
     );
 
-    return savedProgram;
+    programWithTasks.totalsDuration = 0;
+
+    return programWithTasks;
   }
 
   public async updateProgram(
@@ -198,11 +207,24 @@ export class ProgramService {
     /*await this.sharedEntititesService.cloneProgramWithTasks(version, programId);*/
   }
 
-  public async getPrograms(user: CookieUser) {
+  public async getPrograms(user: CookieUser, body: getProgramDto) {
+    console.log('BODYZXXXXXXXXXXXX', body);
     const programsWithTasks =
-      await this.programEntityService.getAllProgramsWithTasks({
-        userId: user.userId,
-      });
+      await this.programEntityService.getAllProgramsWithTasks(
+        {
+          userId: user.userId,
+        },
+        body.searchString,
+        body.pageNumber,
+        body.order,
+      );
+
+    if (programsWithTasks.length === 0)
+      throw new CustomHttpException(
+        'No Tasks',
+        HttpStatus.NOT_FOUND,
+        ProgramErrors.NO_TASK_ERROR,
+      );
 
     console.log(programsWithTasks);
     programsWithTasks.map((program, i) => {

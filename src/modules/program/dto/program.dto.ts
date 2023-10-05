@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { SortBy } from 'src/database/entities/program/programEntity.service';
 
 export class createProgramDto {
   @IsNotEmpty()
@@ -69,4 +70,10 @@ export class UpdateProgramDto {
 
   @IsNotEmpty()
   public task: Task;
+}
+
+export class getProgramDto {
+  public searchString: string;
+  public order: SortBy;
+  public pageNumber: number;
 }

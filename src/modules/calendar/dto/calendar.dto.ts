@@ -7,8 +7,7 @@ export class createPorgramCalendarDto {
   @IsNotEmpty()
   public startDate: Date;
 
-  @IsNotEmpty()
-  calendarId: number;
+  public calendarId?: number;
 }
 
 export class editProgramCalendarDto {

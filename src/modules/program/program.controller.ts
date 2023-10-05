@@ -13,6 +13,7 @@ import {
   UpdateProgram,
   UpdateProgramDto,
   createProgramDto,
+  getProgramDto,
 } from './dto/program.dto';
 import {
   CookieUser,
@@ -23,9 +24,15 @@ import {
 export class ProgramController {
   constructor(private programService: ProgramService) {}
 
-  @Get('/getPrograms')
-  public async GetPrograms(@StoredUser() user: CookieUser) {
-    const programWithTasks = await this.programService.getPrograms(user);
+  @Post('/getPrograms')
+  public async GetPrograms(
+    @StoredUser() user: CookieUser,
+    @Body() requestBody: getProgramDto,
+  ) {
+    const programWithTasks = await this.programService.getPrograms(
+      user,
+      requestBody,
+    );
     return {
       ok: true,
       programWithTasks,

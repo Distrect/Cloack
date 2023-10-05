@@ -10,6 +10,23 @@ export class CalendarService {
   @Inject(CalendarEntityService)
   private calendarEntityService: CalendarEntityService;
 
+  public async createProgramCalendar(body: createPorgramCalendarDto) {}
+}
+
+/*
+
+import { Injectable, Inject, Post, Body } from '@nestjs/common';
+import { CalendarEntityService } from 'src/database/entities/calendar/calendareEntity.service';
+import {
+  createPorgramCalendarDto,
+  editProgramCalendarDto,
+} from './dto/calendar.dto';
+
+@Injectable()
+export class CalendarService {
+  @Inject(CalendarEntityService)
+  private calendarEntityService: CalendarEntityService;
+
   public async createProgramCalendar(param: createPorgramCalendarDto) {
     const newProgramCalendar =
       await this.calendarEntityService.createProgramCalendar(param);
@@ -34,3 +51,5 @@ export class CalendarService {
     return { ok: true, message: 'Program successfully deleted on calendar' };
   }
 }
+
+*/

@@ -11,6 +11,7 @@ import {
   RelationId,
   VirtualColumn,
   JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { Tag } from '../tag/tag.entity';
 import { User } from '../user/user.entity';
@@ -24,7 +25,7 @@ export abstract class ProgramBase {
   @Column('varchar')
   programName: string;
 
-  @Column('text')
+  @Column('varchar', { default: 'Program Description' })
   programDescription: string;
 
   @Column({ type: 'boolean', default: false })
@@ -41,6 +42,9 @@ export abstract class ProgramBase {
     type: 'varchar',
   })
   total: string;
+
+  @CreateDateColumn({ name: 'createdAt' })
+  public createdAt: Date;
 
   public totalsDuration: number;
 }

@@ -34,19 +34,7 @@ export class CalendarController {
   public async EditProgramCalendar(
     @Body() requestBody: editProgramCalendarDto,
     @Param(':programCalendarId', ParseIntPipe) programCalendarId: number,
-  ) {
-    const updatedProgramCalendar =
-      await this.calendarService.updateProgramCalendar(
-        requestBody,
-        programCalendarId,
-      );
-
-    return {
-      ok: true,
-      message: 'Calendar successfully updated',
-      programCalendar: updatedProgramCalendar,
-    };
-  }
+  ) {}
 
   @Delete('/deleteProgramCalendar/:programCalendarId')
   public async DeleteprogramCalendar(

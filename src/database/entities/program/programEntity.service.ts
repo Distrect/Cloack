@@ -7,14 +7,22 @@ import { Repository } from 'typeorm';
 import { Program } from './program.entity';
 import { createProgramDto } from 'src/modules/program/dto/program.dto';
 
+export enum SortBy {
+  ProgramName = 'programName',
+  CreatedAt = 'createdAt',
+}
+
 @Injectable()
 export class ProgramEntityService {
   constructor(
     @Inject('ProgramRepository') public programRepository: Repository<Program>,
   ) {}
 
-  public async createProgram(program: createProgramDto) {
-    const newPorgram = this.programRepository.create(program);
+  public async createProgram(program: createProgramDto, userId: number) {
+    const newPorgram = this.programRepository.create({
+      ...program,
+      user: { userId },
+    });
     return await this.saveProgram(newPorgram);
   }
 
@@ -55,21 +63,37 @@ export class ProgramEntityService {
     return await this.programRepository.update(id, { isDeleted: true });
   }
 
-  public async getAllProgramsWithTasks({ userId }: { userId: number }) {
-    return await this.programRepository
+  public async getAllProgramsWithTasks(
+    { userId }: { userId: number },
+    programName: string = '',
+    pageNumber: number = 1,
+    sort: null | SortBy = null,
+  ) {
+    let querry = this.programRepository
       .createQueryBuilder('program')
       .leftJoinAndSelect('program.programtask', 'program_task')
       .leftJoinAndSelect('program_task.task', 'task')
-      // .addSelect(
-      //   'SUM(TIME_TO_SEC(task.taskDuration)) * COUNT(DISTINCT program_task.programTaskId) / COUNT(*)',
-      //   'program_total',
-      // )
       .orderBy('program_task.order', 'ASC')
       .groupBy('program.programId')
       .addGroupBy('task.taskId')
       .addGroupBy('program_Task.programTaskId')
-      .where('program.user = :userId', { userId })
-      .getMany();
+      .skip((pageNumber - 1) * 6)
+      .take(6)
+      .where('program.user = :userId', { userId });
+
+    if (programName) {
+      querry = querry.andWhere(`program.programName LIKE :param`, {
+        param: `%${programName}%`,
+      });
+    }
+
+    if (sort !== null) {
+      if (sort === SortBy.ProgramName)
+        querry = querry.orderBy('program.programName', 'ASC');
+      else querry = querry.orderBy('program.createdAt', 'ASC');
+    }
+
+    return await querry.getMany();
   }
 }
 
