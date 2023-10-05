@@ -1,9 +1,6 @@
 import { Injectable, Inject, Post, Body } from '@nestjs/common';
 import { CalendarEntityService } from 'src/database/entities/calendar/calendareEntity.service';
-import {
-  createPorgramCalendarDto,
-  editProgramCalendarDto,
-} from './dto/calendar.dto';
+import { createPorgramCalendarDto } from './dto/calendar.dto';
 
 @Injectable()
 export class CalendarService {
